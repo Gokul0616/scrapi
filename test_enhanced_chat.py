@@ -9,7 +9,7 @@ import time
 import re
 
 # Get backend URL from environment
-BACKEND_URL = "https://backend-integrator.preview.emergentagent.com/api"
+BACKEND_URL = "https://smart-shop-chat.preview.emergentagent.com/api"
 
 def authenticate():
     """Authenticate and return headers"""
