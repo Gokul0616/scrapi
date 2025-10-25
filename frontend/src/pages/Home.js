@@ -237,7 +237,7 @@ function Home() {
                     recentRuns.map((run) => (
                       <tr 
                         key={run.id}
-                        onClick={() => navigate(`/datasets/${run.id}`)}
+                        onClick={() => navigate(`/dataset/${run.id}`)}
                         className="hover:bg-gray-50 cursor-pointer transition-colors"
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
