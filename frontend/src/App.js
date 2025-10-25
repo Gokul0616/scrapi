@@ -14,7 +14,7 @@ import DatasetV2 from './pages/DatasetV2';
 import RunsV2 from './pages/RunsV2';
 import ActorsV2 from './pages/ActorsV2';
 import Marketplace from './pages/Marketplace';
-import MyScrapers from './pages/MyScrapers';
+import MyScraper from './pages/MyScraper';
 import CreateScraper from './pages/CreateScraper';
 import GlobalChat from './components/GlobalChat';
 
