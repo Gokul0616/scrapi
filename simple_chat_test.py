@@ -12,26 +12,41 @@ BACKEND_URL = "https://smart-shop-chat.preview.emergentagent.com/api"
 def test_basic_chat():
     print("=== Testing Global Chat Assistant ===")
     
-    # Step 1: Login
-    print("1. Logging in...")
-    login_data = {
-        "username": "testuser_scrapi",
-        "password": "password123"
+    # Step 1: Register/Login
+    print("1. Registering user...")
+    register_data = {
+        "username": "testuser_chat",
+        "email": "testuser_chat@scrapi.com",
+        "password": "password123",
+        "organization_name": "Test Org"
     }
     
-    response = requests.post(f"{BACKEND_URL}/auth/login", json=login_data, timeout=30)
-    if response.status_code != 200:
-        print(f"❌ Login failed: {response.status_code}")
-        print(f"Response: {response.text}")
-        return
+    response = requests.post(f"{BACKEND_URL}/auth/register", json=register_data, timeout=30)
+    if response.status_code == 200:
+        auth_data = response.json()
+        token = auth_data.get("access_token")
+        print("✅ Registration successful")
+    else:
+        # Try login if user exists
+        print("Registration failed, trying login...")
+        login_data = {
+            "username": "testuser_chat",
+            "password": "password123"
+        }
+        
+        response = requests.post(f"{BACKEND_URL}/auth/login", json=login_data, timeout=30)
+        if response.status_code != 200:
+            print(f"❌ Both registration and login failed: {response.status_code}")
+            print(f"Response: {response.text}")
+            return
+        
+        auth_data = response.json()
+        token = auth_data.get("access_token")
+        print("✅ Login successful")
     
-    auth_data = response.json()
-    token = auth_data.get("access_token")
     if not token:
         print("❌ No access token received")
         return
-    
-    print("✅ Login successful")
     
     # Step 2: Test basic chat
     print("\n2. Testing basic chat...")
