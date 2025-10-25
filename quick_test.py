@@ -8,7 +8,7 @@ import json
 import re
 
 # Get backend URL from environment
-BACKEND_URL = "https://scrapify-test.preview.emergentagent.com/api"
+BACKEND_URL = "https://map-scrapper.preview.emergentagent.com/api"
 
 def test_run_creation():
     # Authenticate

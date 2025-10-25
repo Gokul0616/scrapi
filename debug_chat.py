@@ -7,7 +7,7 @@ import requests
 import json
 
 # Get backend URL from environment
-BACKEND_URL = "https://scrapify-test.preview.emergentagent.com/api"
+BACKEND_URL = "https://map-scrapper.preview.emergentagent.com/api"
 
 def test_chat_response():
     # First authenticate

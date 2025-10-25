@@ -12,7 +12,7 @@ import os
 from datetime import datetime
 
 # Get backend URL from environment
-BACKEND_URL = "https://scrapify-test.preview.emergentagent.com/api"
+BACKEND_URL = "https://map-scrapper.preview.emergentagent.com/api"
 
 class ScrapiAPITester:
     def __init__(self):
