@@ -236,7 +236,7 @@ function Store() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/actors/${actor.id}`);
+                      navigate(`/actor/${actor.id}`);
                     }}
                     className="w-full mt-4 py-2 bg-white border border-gray-900 text-gray-900 rounded-lg hover:bg-gray-900 hover:text-white transition-all font-medium"
                   >
