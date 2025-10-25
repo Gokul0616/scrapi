@@ -15,7 +15,7 @@ from datetime import datetime
 import asyncio
 
 # Get backend URL from environment
-BACKEND_URL = "https://map-scrapper.preview.emergentagent.com/api"
+BACKEND_URL = "https://page-not-found-fix-1.preview.emergentagent.com/api"
 
 class CriticalFixesTester:
     def __init__(self):
