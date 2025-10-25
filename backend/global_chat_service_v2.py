@@ -21,9 +21,15 @@ class EnhancedGlobalChatService:
     def __init__(self, db, user_id: str):
         self.db = db
         self.user_id = user_id
-        self.api_key = os.getenv('OPENAI_API_KEY')
+        # Try OpenAI first, fallback to Emergent LLM key
+        self.api_key = os.getenv('OPENAI_API_KEY') or os.getenv('EMERGENT_LLM_KEY')
         if not self.api_key:
-            raise ValueError("OPENAI_API_KEY not found in environment")
+            raise ValueError("Neither OPENAI_API_KEY nor EMERGENT_LLM_KEY found in environment")
+        
+        # Determine which key type we're using
+        self.using_openai = bool(os.getenv('OPENAI_API_KEY'))
+        logger.info(f"EnhancedGlobalChatService initialized with {'OpenAI' if self.using_openai else 'Emergent LLM'} key")
+        
         self.client = OpenAI(api_key=self.api_key)
         
         self.system_prompt = """You are Scrapi AI Agent - an intelligent AI with COMPLETE CONTROL over the Scrapi web scraping platform.
