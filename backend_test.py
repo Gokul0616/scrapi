@@ -2723,24 +2723,8 @@ class ScrapiAPITester:
             self.log("❌ Authentication failed - stopping tests")
             return
             
-        # Test initial state verification
-        self.test_initial_state_verification()
-        
-        # Test scraper creation system as requested in review
-        self.test_scraper_creation_system()
-        
-        # Test end-to-end workflow with real data
-        self.test_end_to_end_scraper_workflow()
-        
-        # Skip other tests for focused scraper creation testing
-        # self.test_google_maps_scraper_v4_enhanced_super_fast()
-        # self.test_data_isolation_fix()
-        # self.test_actors_management()
-        # self.test_proxy_system()
-        # self.test_enhanced_scraping_v3()
-        # self.test_enhanced_dataset_v3()
-        # self.test_ai_chat_system()
-        # self.test_enhanced_global_chat_system()
+        # Test Global Chat Assistant as per review requirements
+        self.test_global_chat_assistant_review()
         
         # Print summary
         self.print_summary()
