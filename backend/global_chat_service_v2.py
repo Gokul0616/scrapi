@@ -843,47 +843,19 @@ You: FUNCTION_CALL: {{"name": "create_scraping_run", "arguments": {{"actor_name"
 - Use pronouns and references from earlier in the conversation
 {conversation_context}"""
             
-            # Create messages for OpenAI
-            messages = [
-                {"role": "system", "content": enhanced_prompt},
-                {"role": "user", "content": message}
-            ]
-
-            # Get response using OpenAI client (with custom base URL for Emergent)
-            # Try with current client, fallback to Emergent if OpenAI fails
-            try:
-                response = self.client.chat.completions.create(
-                    model="gpt-4o-mini",
-                    messages=messages,
-                    max_tokens=1000,
-                    temperature=0.7
-                )
-                response = response.choices[0].message.content
-            except Exception as api_error:
-                # If OpenAI fails, automatically fallback to Emergent LLM key
-                if self.using_openai:
-                    logger.warning(f"OpenAI API error: {str(api_error)}, falling back to Emergent LLM key")
-                    emergent_key = os.getenv('EMERGENT_LLM_KEY')
-                    if emergent_key:
-                        fallback_client = OpenAI(
-                            api_key=emergent_key,
-                            base_url="https://llm.emergentmethods.ai/v1"
-                        )
-                        response = fallback_client.chat.completions.create(
-                            model="gpt-4o-mini",
-                            messages=messages,
-                            max_tokens=1000,
-                            temperature=0.7
-                        )
-                        response = response.choices[0].message.content
-                        # Update instance to use Emergent key going forward
-                        self.client = fallback_client
-                        self.using_openai = False
-                        logger.info("Successfully switched to Emergent LLM key")
-                    else:
-                        raise api_error
-                else:
-                    raise api_error
+            # Initialize LlmChat with session ID
+            session_id = f"global_chat_{self.user_id}"
+            llm_chat = LlmChat(
+                api_key=self.api_key,
+                session_id=session_id,
+                system_message=enhanced_prompt
+            ).with_model("openai", "gpt-4o-mini")
+            
+            # Create user message
+            user_msg = UserMessage(text=message)
+            
+            # Get response using emergentintegrations
+            response = await llm_chat.send_message(user_msg)
             
             # Check if response contains function call
             function_call_match = re.search(r'FUNCTION_CALL:\s*({.*?})\s*(?:\n|$)', response, re.DOTALL)
