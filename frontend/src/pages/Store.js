@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Star, Users, TrendingUp, Filter, ChevronDown } from 'lucide-react';
+import { Search, Star, Users, TrendingUp } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
@@ -11,16 +11,26 @@ function Store() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
 
   const categories = [
-    { id: 'all', name: 'All Categories', count: 0 },
-    { id: 'maps', name: '🗺️ Maps & Location', count: 0 },
-    { id: 'business', name: '💼 Business & LinkedIn', count: 0 },
-    { id: 'ecommerce', name: '🛒 E-commerce', count: 0 },
-    { id: 'social', name: '📱 Social Media', count: 0 },
-    { id: 'news', name: '📰 News & Content', count: 0 },
-    { id: 'realestate', name: '🏢 Real Estate', count: 0 }
+    { id: 'all', name: 'All' },
+    { id: 'social', name: 'Social media' },
+    { id: 'ai', name: 'AI' },
+    { id: 'agents', name: 'Agents' },
+    { id: 'lead', name: 'Lead generation' },
+    { id: 'ecommerce', name: 'E-commerce' },
+    { id: 'seo', name: 'SEO tools' },
+    { id: 'jobs', name: 'Jobs' },
+    { id: 'mcp', name: 'MCP servers' },
+    { id: 'news', name: 'News' },
+    { id: 'realestate', name: 'Real estate' },
+    { id: 'developer', name: 'Developer tools' },
+    { id: 'travel', name: 'Travel' },
+    { id: 'videos', name: 'Videos' },
+    { id: 'automation', name: 'Automation' },
+    { id: 'integrations', name: 'Integrations' },
+    { id: 'opensource', name: 'Open source' },
+    { id: 'other', name: 'Other' }
   ];
 
   useEffect(() => {
