@@ -130,7 +130,7 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <DashboardLayout>
-              <MyScrapers />
+              <MyScraper />
             </DashboardLayout>
           </ProtectedRoute>
         } 
