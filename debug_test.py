@@ -7,7 +7,7 @@ import requests
 import json
 import time
 
-BACKEND_URL = "https://page-not-found-fix-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://backend-integrator.preview.emergentagent.com/api"
 
 def test_actor_update_issue():
     """Debug the actor update 404 issue"""

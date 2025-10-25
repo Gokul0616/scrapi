@@ -8,7 +8,7 @@ import json
 import re
 
 # Get backend URL from environment
-BACKEND_URL = "https://page-not-found-fix-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://backend-integrator.preview.emergentagent.com/api"
 
 def test_run_creation():
     # Authenticate
