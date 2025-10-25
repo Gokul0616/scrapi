@@ -40,7 +40,7 @@ const GlobalChat = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `${API}/chat/global/history?limit=50`,
+        `${API}/chat/global/history?limit=30`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
