@@ -193,7 +193,7 @@ function Store() {
               {filteredActors.map((actor) => (
                 <div
                   key={actor.id}
-                  onClick={() => navigate(`/actors/${actor.id}`)}
+                  onClick={() => navigate(`/actor/${actor.id}`)}
                   className="border border-gray-200 rounded-lg p-6 hover:border-gray-900 hover:shadow-lg transition-all cursor-pointer bg-white group"
                 >
                   {/* Header */}
