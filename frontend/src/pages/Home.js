@@ -111,7 +111,7 @@ function Home() {
             {recentActors.map((actor) => (
               <div
                 key={actor.id}
-                onClick={() => navigate(`/actors/${actor.id}`)}
+                onClick={() => navigate(`/actor/${actor.id}`)}
                 className="border border-gray-200 rounded-lg p-4 hover:border-gray-900 transition-all cursor-pointer bg-white hover:shadow-md"
               >
                 <div className="flex items-center gap-3">
