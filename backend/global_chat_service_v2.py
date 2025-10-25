@@ -816,8 +816,8 @@ You: First get recent runs, then navigate to the latest one
             # Save user message
             await self.save_message("user", message)
             
-            # Get conversation history (last 10 messages for context)
-            history = await self.get_conversation_history(limit=10)
+            # Get conversation history (last 30 messages for context)
+            history = await self.get_conversation_history(limit=30)
             
             # Create LLM client with user-specific session
             session_id = f"global_chat_{self.user_id}"
