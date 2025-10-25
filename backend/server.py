@@ -40,6 +40,15 @@ api_router.include_router(api_routes)
 # Include the router in the main app
 app.include_router(api_router)
 
+# Add a root health endpoint for Kubernetes ingress
+@app.get("/")
+async def health_check():
+    return {"status": "healthy", "service": "scrapi-backend"}
+
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
