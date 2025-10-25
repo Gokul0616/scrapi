@@ -120,27 +120,6 @@ async def get_me(current_user: dict = Depends(get_current_user)):
 # ============= Actor Routes =============
 # NOTE: Specific routes MUST come before parametrized routes to avoid conflicts
 
-@router.get("/actors/my-scrapers", response_model=List[Actor])
-async def get_my_scrapers(
-    status: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
-):
-    """Get user's scrapers with optional status filter."""
-    query = {"user_id": current_user['id']}
-    if status:
-        query["status"] = status
-    
-    actors = await db.actors.find(query, {"_id": 0}).to_list(1000)
-    
-    # Convert datetime strings
-    for actor in actors:
-        if isinstance(actor.get('created_at'), str):
-            actor['created_at'] = datetime.fromisoformat(actor['created_at'])
-        if isinstance(actor.get('updated_at'), str):
-            actor['updated_at'] = datetime.fromisoformat(actor['updated_at'])
-    
-    return actors
-
 @router.get("/actors", response_model=List[Actor])
 async def get_actors(current_user: dict = Depends(get_current_user)):
     """Get all actors for current user."""
