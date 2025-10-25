@@ -14,7 +14,7 @@ from chat_service import LeadChatService
 from global_chat_service import GlobalChatService
 from global_chat_service_v2 import EnhancedGlobalChatService
 from task_manager import get_task_manager
-from scraper_templates import get_all_templates, get_template, get_template_categories
+# Removed scraper_templates import - marketplace feature removed
 import logging
 import asyncio
 
