@@ -227,9 +227,9 @@ backend:
 
   - task: "Global Chat Assistant Service"
     implemented: true
-    working: true
-    file: "backend/global_chat_service.py, backend/routes.py"
-    stuck_count: 0
+    working: false
+    file: "backend/global_chat_service_v2.py, backend/routes.py"
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
@@ -242,6 +242,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ GLOBAL CHAT ASSISTANT FULLY TESTED: All functionality working perfectly after API fix. Comprehensive testing completed: (1) POST /api/chat/global endpoint responding correctly, (2) Contextual responses for all test questions (scraper creation, data export, AI chat features, proxy system), (3) Chat history context maintained across conversation, (4) Proper authentication required, (5) Response quality excellent with detailed step-by-step guidance. Service ready for production use with all specified features working."
+        - working: false
+          agent: "testing"
+          comment: "❌ CRITICAL LLM INTEGRATION ISSUES FOUND: Comprehensive testing revealed LLM connectivity problems preventing proper chat functionality. INFRASTRUCTURE WORKING: ✅ Authentication (register/login), ✅ API endpoints (POST /api/chat/global, GET /api/chat/global/history), ✅ Chat history storage/retrieval (4+ messages stored correctly), ✅ Request/response handling, ✅ Error handling for invalid requests. LLM INTEGRATION FAILING: ❌ OpenAI API key deactivated (401 error: 'account_deactivated'), ❌ Emergent LLM endpoint unreachable (DNS resolution failure for llm.emergentmethods.ai), ❌ All chat responses return generic error message: 'I apologize, but I encountered an error. Please try again.' IMPACT: Core chat infrastructure functional but no actual AI responses due to LLM connectivity issues. Requires valid LLM API key or network configuration fix."
 
   - task: "API Routes - Auth, Actors, Runs, Datasets, Proxies"
     implemented: true
