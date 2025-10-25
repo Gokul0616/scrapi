@@ -16,6 +16,7 @@ import ActorsV2 from './pages/ActorsV2';
 import Marketplace from './pages/Marketplace';
 import MyScraper from './pages/MyScraper';
 import CreateScraper from './pages/CreateScraper';
+import Home from './pages/Home';
 import GlobalChat from './components/GlobalChat';
 
 const ProtectedRoute = ({ children }) => {
