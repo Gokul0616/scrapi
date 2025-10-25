@@ -65,13 +65,40 @@ class LeadChatService:
             ]
 
             # Send message and get response using OpenAI client (with custom base URL for Emergent)
-            response = self.client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=messages,
-                max_tokens=1000,
-                temperature=0.7
-            )
-            result = response.choices[0].message.content
+            # Try with current client, fallback to Emergent if OpenAI fails
+            try:
+                response = self.client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=messages,
+                    max_tokens=1000,
+                    temperature=0.7
+                )
+                result = response.choices[0].message.content
+            except Exception as api_error:
+                # If OpenAI fails and we're using OpenAI, try Emergent key
+                if self.using_openai and 'deactivated' in str(api_error).lower():
+                    logger.warning(f"OpenAI key failed (deactivated), falling back to Emergent LLM key")
+                    emergent_key = os.getenv('EMERGENT_LLM_KEY')
+                    if emergent_key:
+                        fallback_client = OpenAI(
+                            api_key=emergent_key,
+                            base_url="https://llm.emergentmethods.ai/v1"
+                        )
+                        response = fallback_client.chat.completions.create(
+                            model="gpt-4o-mini",
+                            messages=messages,
+                            max_tokens=1000,
+                            temperature=0.7
+                        )
+                        result = response.choices[0].message.content
+                        # Update instance to use Emergent key going forward
+                        self.client = fallback_client
+                        self.using_openai = False
+                        logger.info("Successfully switched to Emergent LLM key")
+                    else:
+                        raise api_error
+                else:
+                    raise api_error
 
             logger.info(f"Generated engagement advice for lead: {lead_data.get('title', 'Unknown')}")
             return result
