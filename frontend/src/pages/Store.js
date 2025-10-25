@@ -90,61 +90,43 @@ function Store() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-7xl mx-auto p-8">
+      <div className="max-w-7xl mx-auto px-6 py-8">
         
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">🏪 Actor Store</h1>
-          <p className="text-gray-600">Discover ready-made scrapers for your data extraction needs</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-3">Apify Store</h1>
+          <p className="text-lg text-gray-600">Discover and use ready-made actors for your data extraction needs</p>
         </div>
 
-        {/* Search and Filter Bar */}
-        <div className="flex gap-4 mb-8">
-          {/* Search */}
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+        {/* Search Bar */}
+        <div className="mb-6">
+          <div className="relative max-w-2xl">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
-              placeholder="Search actors..."
+              placeholder="Search for Actors"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+              className="w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-base"
             />
           </div>
+        </div>
 
-          {/* Category Dropdown */}
-          <div className="relative">
+        {/* Category Pills */}
+        <div className="mb-8 flex flex-wrap gap-2">
+          {categories.map((category) => (
             <button
-              onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
-              className="flex items-center gap-2 px-4 py-3 border border-gray-300 rounded-lg hover:border-gray-900 transition-colors bg-white"
+              key={category.id}
+              onClick={() => setSelectedCategory(category.id)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                selectedCategory === category.id
+                  ? 'bg-gray-900 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
             >
-              <Filter className="w-5 h-5 text-gray-600" />
-              <span className="text-gray-700">
-                {categories.find(c => c.id === selectedCategory)?.name || 'All Categories'}
-              </span>
-              <ChevronDown className="w-4 h-4 text-gray-600" />
+              {category.name}
             </button>
-
-            {showCategoryDropdown && (
-              <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
-                {categories.map((category) => (
-                  <button
-                    key={category.id}
-                    onClick={() => {
-                      setSelectedCategory(category.id);
-                      setShowCategoryDropdown(false);
-                    }}
-                    className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors flex items-center justify-between ${
-                      selectedCategory === category.id ? 'bg-gray-50 font-medium' : ''
-                    }`}
-                  >
-                    <span>{category.name}</span>
-                    <span className="text-sm text-gray-500">({getCategoryCount(category.id)})</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          ))}
         </div>
 
         {/* Featured Actors Section */}
