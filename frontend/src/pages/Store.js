@@ -129,51 +129,16 @@ function Store() {
           ))}
         </div>
 
-        {/* Featured Actors Section */}
-        {selectedCategory === 'all' && !searchQuery && (
-          <div className="mb-12">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">📌 Featured Actors</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {filteredActors.slice(0, 3).map((actor) => (
-                <div
-                  key={actor.id}
-                  onClick={() => navigate(`/actor/${actor.id}`)}
-                  className="border border-gray-200 rounded-lg p-6 hover:border-gray-900 hover:shadow-lg transition-all cursor-pointer bg-white"
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-14 h-14 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center text-3xl">
-                      {actor.icon || '🗺️'}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-gray-900 text-lg">{actor.name}</h3>
-                      <div className="flex items-center gap-2 mt-1">
-                        <div className="flex items-center gap-1">
-                          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                          <span className="text-sm font-medium">{actor.rating || '4.8'}</span>
-                        </div>
-                        <span className="text-gray-300">•</span>
-                        <span className="text-sm text-gray-500">{actor.runs_count || '61K'} runs</span>
-                      </div>
-                    </div>
-                  </div>
-                  <button className="w-full py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium">
-                    Try Now
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
-        {/* All Actors Grid */}
+        {/* All Actors Section */}
         <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-900">
-              {searchQuery ? `Search Results (${filteredActors.length})` : 
-               selectedCategory !== 'all' ? categories.find(c => c.id === selectedCategory)?.name :
-               '🔥 All Available Actors'}
-            </h2>
-            <span className="text-sm text-gray-500">{filteredActors.length} actors</span>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">All Actors</h2>
+            <div className="flex items-center gap-4">
+              <button className="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1">
+                View all →
+              </button>
+            </div>
           </div>
 
           {loading ? (
@@ -181,59 +146,43 @@ function Store() {
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
             </div>
           ) : filteredActors.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
               {filteredActors.map((actor) => (
                 <div
                   key={actor.id}
                   onClick={() => navigate(`/actor/${actor.id}`)}
-                  className="border border-gray-200 rounded-lg p-6 hover:border-gray-900 hover:shadow-lg transition-all cursor-pointer bg-white group"
+                  className="border border-gray-200 rounded-xl p-5 hover:border-gray-400 hover:shadow-md transition-all cursor-pointer bg-white group"
                 >
-                  {/* Header */}
+                  {/* Actor Icon and Info */}
                   <div className="flex items-start gap-3 mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center text-2xl flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center text-2xl flex-shrink-0">
                       {actor.icon || '🗺️'}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-gray-700">
+                      <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-gray-700 text-base leading-tight">
                         {actor.name}
                       </h3>
-                      <p className="text-xs text-gray-500 truncate">{actor.type || 'scraper'}</p>
-                      {actor.is_verified && (
-                        <span className="inline-block mt-1 text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded">
-                          ✓ Verified
-                        </span>
-                      )}
+                      <p className="text-xs text-gray-500">{actor.author || 'compass/crawler-google-places'}</p>
                     </div>
                   </div>
 
                   {/* Description */}
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-3 min-h-[3.6rem]">
-                    {actor.description || 'Extract data efficiently with this powerful scraper.'}
+                  <p className="text-sm text-gray-600 mb-4 line-clamp-3 min-h-[3.6rem] leading-relaxed">
+                    {actor.description || 'Extract data from thousands of Google Maps locations and businesses.'}
                   </p>
 
                   {/* Stats */}
-                  <div className="flex items-center gap-4 text-xs text-gray-600 pt-4 border-t border-gray-100">
+                  <div className="flex items-center gap-3 text-xs text-gray-600">
                     <div className="flex items-center gap-1">
                       <Users className="w-3.5 h-3.5" />
-                      <span>{actor.runs_count || '1.1K'}</span>
+                      <span className="font-medium">{actor.runs_count || '189K'}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
                       <span className="font-medium">{actor.rating || '4.8'}</span>
-                      <span className="text-gray-400">({actor.reviews_count || '8'})</span>
+                      <span className="text-gray-400">({actor.reviews_count || '337'})</span>
                     </div>
                   </div>
-
-                  {/* Action Button */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/actor/${actor.id}`);
-                    }}
-                    className="w-full mt-4 py-2 bg-white border border-gray-900 text-gray-900 rounded-lg hover:bg-gray-900 hover:text-white transition-all font-medium"
-                  >
-                    Try Actor
-                  </button>
                 </div>
               ))}
             </div>
