@@ -898,19 +898,17 @@ You: FUNCTION_CALL: {{"name": "create_scraping_run", "arguments": {{"actor_name"
                         created_input_data = function_result_dict.get("form_data")
                     
                     # Get final response with function result
-                    follow_up_messages = [
-                        {"role": "system", "content": enhanced_prompt},
-                        {"role": "user", "content": message},
-                        {"role": "assistant", "content": response},
-                        {"role": "user", "content": f"Function result: {function_result}\n\nPlease respond naturally to the user's original question with this data. Remember the conversation context. DO NOT include FUNCTION_CALL in your response."}
-                    ]
-                    final_response = self.client.chat.completions.create(
-                        model="gpt-4o-mini",
-                        messages=follow_up_messages,
-                        max_tokens=1000,
-                        temperature=0.7
-                    )
-                    final_response = final_response.choices[0].message.content
+                    follow_up_prompt = f"{enhanced_prompt}\n\nFunction result: {function_result}\n\nPlease respond naturally to the user's original question with this data. Remember the conversation context. DO NOT include FUNCTION_CALL in your response."
+                    
+                    # Create new LlmChat instance for follow-up
+                    follow_up_chat = LlmChat(
+                        api_key=self.api_key,
+                        session_id=session_id,
+                        system_message=follow_up_prompt
+                    ).with_model("openai", "gpt-4o-mini")
+                    
+                    follow_up_msg = UserMessage(text=f"Previous message: {message}\nAssistant response: {response}\n\nPlease provide a natural response with the function data.")
+                    final_response = await follow_up_chat.send_message(follow_up_msg)
                     
                     # Save assistant response
                     await self.save_message("assistant", final_response, function_call_json)
