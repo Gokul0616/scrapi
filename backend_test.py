@@ -2409,6 +2409,309 @@ class ScrapiAPITester:
                 self.log("⚠️ Error handling may not be working properly")
         
         self.log("Enhanced Global Chat System testing completed")
+
+    def test_global_chat_assistant_review(self):
+        """Test Global Chat Assistant functionality as per review requirements"""
+        self.log("=== Testing Global Chat Assistant (Review Requirements) ===")
+        
+        # Test 1: Basic Chat Flow - "Hello, what can you do?"
+        self.log("--- Test 1: Basic Chat Flow ---")
+        chat_request = {"message": "Hello, what can you do?"}
+        
+        response = self.make_request("POST", "/chat/global", chat_request)
+        if response and response.status_code == 200:
+            chat_response = response.json()
+            if "response" in chat_response:
+                ai_response = chat_response["response"]
+                
+                # Check for "encounter some issues" error
+                if "encounter some issues" in ai_response.lower():
+                    self.log("❌ Chat returned 'encounter some issues' error")
+                    self.test_results["global_chat"]["failed"] += 1
+                    self.test_results["global_chat"]["errors"].append("Chat returned 'encounter some issues' error")
+                elif len(ai_response) > 50:  # Reasonable response length
+                    self.log(f"✅ Basic chat working - response received (length: {len(ai_response)} chars)")
+                    self.test_results["global_chat"]["passed"] += 1
+                    
+                    # Check if response is properly formatted (no raw markdown)
+                    if not any(symbol in ai_response for symbol in ["**", "###", "```"]):
+                        self.log("✅ Response is properly formatted (no raw markdown)")
+                        self.test_results["global_chat"]["passed"] += 1
+                    else:
+                        self.log("⚠️ Response contains raw markdown symbols")
+                    
+                    # Check if response is contextual and helpful
+                    response_lower = ai_response.lower()
+                    helpful_terms = ["scrapi", "scraping", "help", "can", "platform", "features", "ai", "agent"]
+                    if any(term in response_lower for term in helpful_terms):
+                        self.log("✅ Response is contextual and helpful")
+                        self.test_results["global_chat"]["passed"] += 1
+                    else:
+                        self.log("⚠️ Response may not be contextual")
+                else:
+                    self.log("❌ Basic chat response too short")
+                    self.test_results["global_chat"]["failed"] += 1
+                    self.test_results["global_chat"]["errors"].append("Basic chat response too short")
+            else:
+                self.log("❌ Basic chat response missing response field")
+                self.test_results["global_chat"]["failed"] += 1
+                self.test_results["global_chat"]["errors"].append("Basic chat response missing response field")
+        else:
+            self.log(f"❌ Basic chat request failed: {response.status_code if response else 'No response'}")
+            self.test_results["global_chat"]["failed"] += 1
+            self.test_results["global_chat"]["errors"].append("Basic chat request failed")
+            return
+        
+        # Test 2: Multiple Messages - Chat History Maintenance
+        self.log("--- Test 2: Multiple Messages for Chat History ---")
+        test_messages = [
+            "What scrapers are available?",
+            "How do I create a new scraping run?",
+            "Can you show me my recent activity?",
+            "What data formats can I export?",
+            "How does the proxy system work?"
+        ]
+        
+        successful_messages = 0
+        for i, message in enumerate(test_messages, 1):
+            self.log(f"Sending message {i}/5: '{message}'")
+            chat_request = {"message": message}
+            
+            response = self.make_request("POST", "/chat/global", chat_request)
+            if response and response.status_code == 200:
+                chat_response = response.json()
+                ai_response = chat_response.get("response", "")
+                
+                if "encounter some issues" not in ai_response.lower() and len(ai_response) > 30:
+                    successful_messages += 1
+                    self.log(f"✅ Message {i} successful")
+                else:
+                    self.log(f"❌ Message {i} failed or returned error")
+                    self.test_results["global_chat"]["errors"].append(f"Message {i} failed: {message}")
+            else:
+                self.log(f"❌ Message {i} request failed")
+                self.test_results["global_chat"]["errors"].append(f"Message {i} request failed")
+            
+            # Small delay between messages
+            time.sleep(1)
+        
+        if successful_messages >= 4:  # At least 4 out of 5 should work
+            self.log(f"✅ Multiple messages working ({successful_messages}/5 successful)")
+            self.test_results["global_chat"]["passed"] += 1
+        else:
+            self.log(f"❌ Multiple messages failing ({successful_messages}/5 successful)")
+            self.test_results["global_chat"]["failed"] += 1
+            self.test_results["global_chat"]["errors"].append(f"Only {successful_messages}/5 messages successful")
+        
+        # Test 3: Chat History Endpoint - GET /api/chat/global/history
+        self.log("--- Test 3: Chat History Endpoint ---")
+        response = self.make_request("GET", "/chat/global/history", params={"limit": 30})
+        if response and response.status_code == 200:
+            history_data = response.json()
+            if "history" in history_data:
+                history = history_data["history"]
+                if isinstance(history, list):
+                    self.log(f"✅ Chat history endpoint working - retrieved {len(history)} messages")
+                    self.test_results["global_chat"]["passed"] += 1
+                    
+                    # Should have messages from our tests (at least 6: 1 basic + 5 multiple)
+                    if len(history) >= 6:
+                        self.log("✅ Chat history maintains conversation across messages")
+                        self.test_results["global_chat"]["passed"] += 1
+                        
+                        # Verify message structure
+                        if len(history) > 0:
+                            sample_msg = history[0]
+                            if "role" in sample_msg and "content" in sample_msg:
+                                self.log("✅ Chat history has correct message structure")
+                                self.test_results["global_chat"]["passed"] += 1
+                            else:
+                                self.log("❌ Chat history messages missing required fields")
+                                self.test_results["global_chat"]["failed"] += 1
+                                self.test_results["global_chat"]["errors"].append("Chat history messages missing fields")
+                        
+                        # Check for both user and assistant messages
+                        user_msgs = [msg for msg in history if msg.get("role") == "user"]
+                        assistant_msgs = [msg for msg in history if msg.get("role") == "assistant"]
+                        
+                        if len(user_msgs) > 0 and len(assistant_msgs) > 0:
+                            self.log(f"✅ History contains both user ({len(user_msgs)}) and assistant ({len(assistant_msgs)}) messages")
+                            self.test_results["global_chat"]["passed"] += 1
+                        else:
+                            self.log("❌ History missing user or assistant messages")
+                            self.test_results["global_chat"]["failed"] += 1
+                            self.test_results["global_chat"]["errors"].append("History missing message types")
+                    else:
+                        self.log(f"⚠️ Chat history has fewer messages than expected ({len(history)} < 6)")
+                else:
+                    self.log("❌ Chat history is not a list")
+                    self.test_results["global_chat"]["failed"] += 1
+                    self.test_results["global_chat"]["errors"].append("Chat history is not a list")
+            else:
+                self.log("❌ Chat history response missing history field")
+                self.test_results["global_chat"]["failed"] += 1
+                self.test_results["global_chat"]["errors"].append("Chat history response missing history field")
+        else:
+            self.log(f"❌ Chat history request failed: {response.status_code if response else 'No response'}")
+            self.test_results["global_chat"]["failed"] += 1
+            self.test_results["global_chat"]["errors"].append("Chat history request failed")
+        
+        # Test 4: Function Calling - Data Access
+        self.log("--- Test 4: Function Calling - Data Access ---")
+        data_request = {"message": "How many runs do I have?"}
+        
+        response = self.make_request("POST", "/chat/global", data_request)
+        if response and response.status_code == 200:
+            chat_response = response.json()
+            ai_response = chat_response.get("response", "")
+            
+            if "encounter some issues" not in ai_response.lower():
+                if len(ai_response) > 20:
+                    self.log(f"✅ Function calling working - data access response received")
+                    self.test_results["global_chat"]["passed"] += 1
+                    
+                    # Check if response contains numerical data (indicating real data access)
+                    import re
+                    numbers = re.findall(r'\b\d+\b', ai_response)
+                    if numbers:
+                        self.log(f"✅ Response contains real numerical data: {numbers}")
+                        self.test_results["global_chat"]["passed"] += 1
+                        
+                        # Verify it's user-specific data (not global)
+                        response_lower = ai_response.lower()
+                        user_specific_terms = ["you have", "your", "you've"]
+                        if any(term in response_lower for term in user_specific_terms):
+                            self.log("✅ Function calling returns user-specific data")
+                            self.test_results["global_chat"]["passed"] += 1
+                        else:
+                            self.log("⚠️ Response may not be user-specific")
+                    else:
+                        self.log("⚠️ No numerical data in response (may be expected if no runs)")
+                else:
+                    self.log("❌ Function calling response too short")
+                    self.test_results["global_chat"]["failed"] += 1
+                    self.test_results["global_chat"]["errors"].append("Function calling response too short")
+            else:
+                self.log("❌ Function calling returned 'encounter some issues' error")
+                self.test_results["global_chat"]["failed"] += 1
+                self.test_results["global_chat"]["errors"].append("Function calling returned error")
+        else:
+            self.log("❌ Function calling request failed")
+            self.test_results["global_chat"]["failed"] += 1
+            self.test_results["global_chat"]["errors"].append("Function calling request failed")
+        
+        # Test 5: Error Handling - Check for 500 errors and exceptions
+        self.log("--- Test 5: Error Handling ---")
+        
+        # Test with various edge cases
+        edge_cases = [
+            {"message": ""},  # Empty message
+            {"message": "A" * 1000},  # Very long message
+            {"invalid_field": "test"},  # Invalid request format
+        ]
+        
+        error_handling_passed = 0
+        for i, test_case in enumerate(edge_cases, 1):
+            self.log(f"Testing edge case {i}: {list(test_case.keys())}")
+            
+            response = self.make_request("POST", "/chat/global", test_case)
+            if response:
+                if response.status_code == 400:  # Expected for invalid requests
+                    self.log(f"✅ Edge case {i} handled correctly (400 error)")
+                    error_handling_passed += 1
+                elif response.status_code == 200:
+                    # Check if response is reasonable
+                    try:
+                        chat_response = response.json()
+                        if "response" in chat_response:
+                            self.log(f"✅ Edge case {i} handled gracefully (200 OK)")
+                            error_handling_passed += 1
+                        else:
+                            self.log(f"❌ Edge case {i} returned 200 but invalid response")
+                    except:
+                        self.log(f"❌ Edge case {i} returned invalid JSON")
+                elif response.status_code == 500:
+                    self.log(f"❌ Edge case {i} caused 500 error (unhandled exception)")
+                    self.test_results["global_chat"]["errors"].append(f"Edge case {i} caused 500 error")
+                else:
+                    self.log(f"⚠️ Edge case {i} returned unexpected status: {response.status_code}")
+            else:
+                self.log(f"❌ Edge case {i} no response")
+        
+        if error_handling_passed >= 2:  # At least 2 out of 3 should be handled properly
+            self.log("✅ Error handling working properly")
+            self.test_results["global_chat"]["passed"] += 1
+        else:
+            self.log("❌ Error handling needs improvement")
+            self.test_results["global_chat"]["failed"] += 1
+            self.test_results["global_chat"]["errors"].append("Poor error handling")
+        
+        # Test 6: Check Backend Logs (via supervisor)
+        self.log("--- Test 6: Backend Logs Check ---")
+        try:
+            # Check supervisor backend logs for any errors
+            import subprocess
+            result = subprocess.run(
+                ["tail", "-n", "50", "/var/log/supervisor/backend.err.log"],
+                capture_output=True,
+                text=True,
+                timeout=10
+            )
+            
+            if result.returncode == 0:
+                error_logs = result.stdout
+                if error_logs.strip():
+                    # Check for recent errors (look for timestamps from last few minutes)
+                    recent_errors = []
+                    for line in error_logs.split('\n'):
+                        if any(error_term in line.lower() for error_term in ['error', 'exception', 'traceback', 'failed']):
+                            recent_errors.append(line)
+                    
+                    if recent_errors:
+                        self.log(f"⚠️ Found {len(recent_errors)} error entries in backend logs")
+                        for error in recent_errors[-3:]:  # Show last 3 errors
+                            self.log(f"   LOG: {error}")
+                    else:
+                        self.log("✅ No recent errors in backend logs")
+                        self.test_results["global_chat"]["passed"] += 1
+                else:
+                    self.log("✅ Backend error log is clean")
+                    self.test_results["global_chat"]["passed"] += 1
+            else:
+                self.log("⚠️ Could not read backend logs")
+        except Exception as e:
+            self.log(f"⚠️ Error checking backend logs: {str(e)}")
+        
+        # Test 7: Verify Emergent LLM Integration
+        self.log("--- Test 7: Emergent LLM Integration Check ---")
+        
+        # Test a specific question that should trigger the LLM
+        llm_test_request = {"message": "Explain how web scraping works in simple terms"}
+        
+        response = self.make_request("POST", "/chat/global", llm_test_request)
+        if response and response.status_code == 200:
+            chat_response = response.json()
+            ai_response = chat_response.get("response", "")
+            
+            if "encounter some issues" not in ai_response.lower() and len(ai_response) > 100:
+                self.log("✅ Emergent LLM integration working - detailed response received")
+                self.test_results["global_chat"]["passed"] += 1
+                
+                # Check for coherent explanation
+                explanation_terms = ["scraping", "data", "website", "extract", "information", "web"]
+                if sum(1 for term in explanation_terms if term in ai_response.lower()) >= 3:
+                    self.log("✅ LLM provides coherent explanations")
+                    self.test_results["global_chat"]["passed"] += 1
+                else:
+                    self.log("⚠️ LLM response may not be coherent")
+            else:
+                self.log("❌ Emergent LLM integration issues")
+                self.test_results["global_chat"]["failed"] += 1
+                self.test_results["global_chat"]["errors"].append("Emergent LLM integration issues")
+        else:
+            self.log("❌ LLM integration test failed")
+            self.test_results["global_chat"]["failed"] += 1
+            self.test_results["global_chat"]["errors"].append("LLM integration test failed")
             
     def run_all_tests(self):
         """Run all test suites"""
