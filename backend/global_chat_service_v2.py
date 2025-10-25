@@ -860,15 +860,26 @@ You: FUNCTION_CALL: {{"name": "create_scraping_run", "arguments": {{"actor_name"
                 {"role": "user", "content": message}
             ]
 
-            # Get response
-            response = self.client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=messages,
-                max_tokens=1000,
-                temperature=0.7
-            )
-
-            response = response.choices[0].message.content
+            # Get response using appropriate client
+            if self.use_litellm:
+                # Use LiteLLM for Emergent key
+                response = litellm.completion(
+                    model=self.model,
+                    messages=messages,
+                    api_key=self.api_key,
+                    max_tokens=1000,
+                    temperature=0.7
+                )
+                response = response.choices[0].message.content
+            else:
+                # Use OpenAI client
+                response = self.client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=messages,
+                    max_tokens=1000,
+                    temperature=0.7
+                )
+                response = response.choices[0].message.content
             
             # Check if response contains function call
             function_call_match = re.search(r'FUNCTION_CALL:\s*({.*?})\s*(?:\n|$)', response, re.DOTALL)
