@@ -9,12 +9,18 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 class LeadChatService:
-    """Service for AI-powered lead engagement advice using OpenAI."""
+    """Service for AI-powered lead engagement advice using OpenAI with Emergent LLM fallback."""
 
     def __init__(self):
-        self.api_key = os.getenv('OPENAI_API_KEY')
+        # Try OpenAI first, fallback to Emergent LLM key
+        self.api_key = os.getenv('OPENAI_API_KEY') or os.getenv('EMERGENT_LLM_KEY')
         if not self.api_key:
-            raise ValueError("OPENAI_API_KEY not found in environment variables")
+            raise ValueError("Neither OPENAI_API_KEY nor EMERGENT_LLM_KEY found in environment variables")
+        
+        # Determine which key type we're using
+        self.using_openai = bool(os.getenv('OPENAI_API_KEY'))
+        logger.info(f"LeadChatService initialized with {'OpenAI' if self.using_openai else 'Emergent LLM'} key")
+        
         self.client = OpenAI(api_key=self.api_key)
     
     async def get_engagement_advice(
