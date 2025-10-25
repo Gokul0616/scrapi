@@ -39,9 +39,12 @@ class EnhancedGlobalChatService:
             self.client = OpenAI(api_key=self.api_key)
             self.use_litellm = False
         else:
-            # Use LiteLLM for Emergent key
-            self.use_litellm = True
-            self.model = "gpt-4o-mini"
+            # Use custom OpenAI-compatible endpoint for Emergent key
+            self.client = OpenAI(
+                api_key=self.api_key,
+                base_url="https://llm.emergentmethods.ai/v1"
+            )
+            self.use_litellm = False  # Use OpenAI client with custom base URL
         
         self.system_prompt = """You are Scrapi AI Agent - an intelligent AI with COMPLETE CONTROL over the Scrapi web scraping platform.
 
