@@ -70,47 +70,47 @@ class ScrapiAPITester:
         """Test complete authentication flow"""
         self.log("=== Testing Authentication Flow ===")
         
-        # Test user registration
-        self.log("Testing user registration...")
-        register_data = {
+        # Try login with existing user first (as requested in review)
+        self.log("Testing login with existing user...")
+        login_data = {
             "username": "testuser_scrapi",
-            "email": "testuser@scrapi.com", 
-            "password": "SecurePass123!",
-            "organization_name": "Test Organization"
+            "password": "password123"
         }
         
-        response = self.make_request("POST", "/auth/register", register_data)
+        response = self.make_request("POST", "/auth/login", login_data)
         if response and response.status_code == 200:
             data = response.json()
             if "access_token" in data and "user" in data:
                 self.auth_token = data["access_token"]
                 self.user_data = data["user"]
-                self.log("✅ User registration successful")
+                self.log("✅ User login successful")
                 self.test_results["auth"]["passed"] += 1
             else:
-                self.log("❌ Registration response missing required fields")
+                self.log("❌ Login response missing required fields")
                 self.test_results["auth"]["failed"] += 1
-                self.test_results["auth"]["errors"].append("Registration response missing access_token or user")
+                self.test_results["auth"]["errors"].append("Login response missing access_token or user")
         else:
-            # Try login if user already exists
-            self.log("Registration failed, trying login...")
-            login_data = {
+            # Try registration if login fails
+            self.log("Login failed, trying registration...")
+            register_data = {
                 "username": "testuser_scrapi",
-                "password": "SecurePass123!"
+                "email": "testuser@scrapi.com", 
+                "password": "password123",
+                "organization_name": "Test Organization"
             }
             
-            response = self.make_request("POST", "/auth/login", login_data)
+            response = self.make_request("POST", "/auth/register", register_data)
             if response and response.status_code == 200:
                 data = response.json()
                 if "access_token" in data and "user" in data:
                     self.auth_token = data["access_token"]
                     self.user_data = data["user"]
-                    self.log("✅ User login successful")
+                    self.log("✅ User registration successful")
                     self.test_results["auth"]["passed"] += 1
                 else:
-                    self.log("❌ Login response missing required fields")
+                    self.log("❌ Registration response missing required fields")
                     self.test_results["auth"]["failed"] += 1
-                    self.test_results["auth"]["errors"].append("Login response missing access_token or user")
+                    self.test_results["auth"]["errors"].append("Registration response missing access_token or user")
             else:
                 self.log(f"❌ Authentication failed: {response.status_code if response else 'No response'}")
                 self.test_results["auth"]["failed"] += 1
