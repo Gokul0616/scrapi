@@ -186,9 +186,9 @@ Help the user craft a winning approach to engage with {business_name}."""
             )
             return response.choices[0].message.content
         except Exception as api_error:
-            # If OpenAI fails and we're using OpenAI, try Emergent key
-            if self.using_openai and 'deactivated' in str(api_error).lower():
-                logger.warning(f"OpenAI key failed (deactivated), falling back to Emergent LLM key")
+            # If OpenAI fails, automatically fallback to Emergent LLM key
+            if self.using_openai:
+                logger.warning(f"OpenAI API error: {str(api_error)}, falling back to Emergent LLM key")
                 emergent_key = os.getenv('EMERGENT_LLM_KEY')
                 if emergent_key:
                     fallback_client = OpenAI(
