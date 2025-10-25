@@ -146,7 +146,7 @@ function Home() {
               <div
                 key={actor.id}
                 className="border border-gray-200 rounded-lg p-6 hover:border-gray-900 transition-all cursor-pointer bg-white hover:shadow-lg"
-                onClick={() => navigate(`/actors/${actor.id}`)}
+                onClick={() => navigate(`/actor/${actor.id}`)}
               >
                 {/* Actor Header */}
                 <div className="flex items-start gap-3 mb-4">
