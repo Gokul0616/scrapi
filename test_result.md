@@ -582,3 +582,31 @@ agent_communication:
           comment: "🎉 COMPREHENSIVE SCRAPER CREATION SYSTEM TESTING COMPLETE: Conducted extensive testing of all components as requested in review. RESULTS: ✅ NAVIGATION & PAGES: All sidebar navigation working (Marketplace, My Scrapers menu items found), Marketplace page loaded with correct title, category filters (All Categories, Maps & Location, E-commerce), Featured Only toggle, search functionality, 5 scraper cards displayed. My Scrapers page loaded with all tabs (All, Draft, Published, Archived), Create Scraper button in header, proper empty state. Actors page has Create Scraper button. ✅ TEMPLATES SHOWN: Found 7 template options including Start from Scratch, Google Maps, LinkedIn, E-commerce, Generic Web, API, Instagram - matches Apify marketplace behavior. ✅ TEMPLATE FLOW WORKING: Google Maps template selection enables Continue button, form pre-fills with template data, successfully created 'Hotel Finder' scraper, published to marketplace, appears in Published tab. ✅ MARKETPLACE FUNCTIONALITY: Category filtering working (Maps & Location shows 6 scrapers), Featured Only toggle working (1 featured scraper), search functionality operational, Clone buttons working (5 clone buttons found), fork integration working (forked scrapers appear in My Scrapers with '(Forked)' suffix). ✅ MY SCRAPERS MANAGEMENT: Tab filtering working (All: 3 scrapers, Draft: 2, Published: 1, Archived: 0), search functionality present, proper status badges and actions (Run for published, Edit for draft). ✅ INTEGRATION TESTING: End-to-end workflow tested - marketplace clone to My Scrapers working, actor detail page accessible, runs page functional with status filters. ❌ CRITICAL BUG STILL EXISTS: 'Start from Scratch' Continue button remains DISABLED after selection - the reported bug fix did not work. User cannot proceed from Step 1 when selecting 'Start from Scratch' option. This blocks the custom scraper creation workflow. ❌ ACTOR DETAIL FORM ISSUE: Actor detail page for created scrapers does not show proper input form for running scrapers. ⚠️ SEARCH LIMITATIONS: Search for 'Hotel' in My Scrapers returned 0 results despite Hotel Finder scraper existing. SUMMARY: Template-based creation, marketplace, and management features working excellently. Critical 'Start from Scratch' bug prevents custom scraper creation. System 90% functional with Apify-like capabilities but needs bug fix for complete workflow."
 
 
+
+  - task: "Store UI Redesign - Apify Clone Layout"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/Store.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "🎨 STORE UI REDESIGNED: Updated Store page to match Apify Store layout while keeping white theme. Changes: (1) Updated page title from 'Actor Store' to 'Apify Store' with larger heading, (2) Replaced dropdown category filter with horizontal pill-style buttons matching Apify design, (3) Added 18 category options: All, Social media, AI, Agents, Lead generation, E-commerce, SEO tools, Jobs, MCP servers, News, Real estate, Developer tools, Travel, Videos, Automation, Integrations, Open source, Other, (4) Improved actor cards with cleaner layout - 4-column grid on large screens, (5) Enhanced card styling with better spacing and hover effects, (6) Simplified stats display in cards. White theme maintained as requested. Ready for testing UI improvements."
+
+  - task: "Global Chat History Extension (10 → 30 messages)"
+    implemented: true
+    working: "NA"
+    file: "backend/global_chat_service_v2.py, frontend/src/components/GlobalChat.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "💬 CHAT HISTORY EXTENDED: Updated chat conversation memory from 10 to 30 messages as requested. Backend changes: (1) Modified global_chat_service_v2.py line 820 - updated get_conversation_history() call from limit=10 to limit=30, (2) Chat now maintains context for last 30 conversation turns. Frontend changes: (1) Updated GlobalChat.js line 43 - changed history API call from limit=50 to limit=30 to match backend, (2) Ensures consistent 30-message history across frontend and backend. Chat will now remember conversations for 30 messages until user manually clears history. Backend restarted and running successfully."
+
+agent_communication:
+    - agent: "main"
+      message: "🚀 STORE UI & CHAT UPDATES COMPLETE: (1) Store page redesigned with Apify-style layout - horizontal category pills, cleaner 4-column grid, larger heading, kept white theme as requested, (2) Extended global chat history from 10 to 30 messages for better conversation memory, (3) Fixed backend dependencies and restarted services - all running successfully. Ready for testing: Store UI improvements and extended chat conversation memory (30 messages)."
