@@ -64,26 +64,14 @@ class LeadChatService:
                 {"role": "user", "content": user_message}
             ]
 
-            # Send message and get response using appropriate client
-            if self.use_litellm:
-                # Use LiteLLM for Emergent key
-                response = litellm.completion(
-                    model=self.model,
-                    messages=messages,
-                    api_key=self.api_key,
-                    max_tokens=1000,
-                    temperature=0.7
-                )
-                result = response.choices[0].message.content
-            else:
-                # Use OpenAI client
-                response = self.client.chat.completions.create(
-                    model="gpt-4o-mini",
-                    messages=messages,
-                    max_tokens=1000,
-                    temperature=0.7
-                )
-                result = response.choices[0].message.content
+            # Send message and get response using OpenAI client (with custom base URL for Emergent)
+            response = self.client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=messages,
+                max_tokens=1000,
+                temperature=0.7
+            )
+            result = response.choices[0].message.content
 
             logger.info(f"Generated engagement advice for lead: {lead_data.get('title', 'Unknown')}")
             return result
