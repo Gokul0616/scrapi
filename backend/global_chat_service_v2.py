@@ -10,6 +10,7 @@ import re
 from typing import List, Dict, Any, Optional
 from datetime import datetime, timezone
 from openai import OpenAI
+import litellm
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -22,15 +23,25 @@ class EnhancedGlobalChatService:
         self.db = db
         self.user_id = user_id
         # Try OpenAI first, fallback to Emergent LLM key
-        self.api_key = os.getenv('OPENAI_API_KEY') or os.getenv('EMERGENT_LLM_KEY')
-        if not self.api_key:
+        openai_key = os.getenv('OPENAI_API_KEY')
+        emergent_key = os.getenv('EMERGENT_LLM_KEY')
+        
+        if not openai_key and not emergent_key:
             raise ValueError("Neither OPENAI_API_KEY nor EMERGENT_LLM_KEY found in environment")
         
         # Determine which key type we're using
-        self.using_openai = bool(os.getenv('OPENAI_API_KEY'))
+        self.using_openai = bool(openai_key)
+        self.api_key = openai_key if self.using_openai else emergent_key
         logger.info(f"EnhancedGlobalChatService initialized with {'OpenAI' if self.using_openai else 'Emergent LLM'} key")
         
-        self.client = OpenAI(api_key=self.api_key)
+        # Use appropriate client
+        if self.using_openai:
+            self.client = OpenAI(api_key=self.api_key)
+            self.use_litellm = False
+        else:
+            # Use LiteLLM for Emergent key
+            self.use_litellm = True
+            self.model = "gpt-4o-mini"
         
         self.system_prompt = """You are Scrapi AI Agent - an intelligent AI with COMPLETE CONTROL over the Scrapi web scraping platform.
 
