@@ -472,6 +472,18 @@ frontend:
           agent: "main"
           comment: "Updated server to use new routes, startup event creates default Google Maps Scraper actor"
 
+  - task: "Cleanup - Remove Marketplace Features & Configure OpenAI Key"
+    implemented: true
+    working: true
+    file: "backend/.env, backend/chat_service.py, backend/global_chat_service_v2.py, backend/routes.py, frontend/src/pages/Marketplace.js, frontend/src/pages/MyScraper.js, frontend/src/pages/CreateScraper.js, frontend/src/App.js, frontend/src/components/Sidebar.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "🧹 CLEANUP & CONFIGURATION COMPLETE: User requested to simplify the app by removing marketplace features and configuring OpenAI key with fallback. BACKEND CHANGES: (1) Added OPENAI_API_KEY to .env file with user-provided key, (2) Updated chat_service.py (LeadChatService) to use OpenAI key first, fallback to Emergent LLM key if not available - added logging to show which key is being used, (3) Updated global_chat_service_v2.py (EnhancedGlobalChatService) with same fallback logic, (4) Removed scraper_templates.py file completely, (5) Removed marketplace-related routes from routes.py: GET /templates, GET /templates/{type}, POST /actors/validate-schema, POST /actors/{id}/fork, GET /marketplace, PATCH /actors/{id}/publish, GET /actors/my-scrapers, (6) Removed scraper_templates import from routes.py. FRONTEND CHANGES: (1) Deleted original Marketplace.js, CreateScraper.js, MyScrapers.js pages, (2) Created new placeholder pages: Marketplace.js (shows 'Marketplace' with 'Coming soon!' text), MyScraper.js (shows 'My Scrapper' with 'Coming soon!' text), CreateScraper.js (shows 'Create Scraper' with back button), (3) Updated App.js to use MyScraper instead of MyScrapers component, (4) Updated Sidebar.js to show 'My Scrapper' instead of 'My Scrapers', (5) Kept sidebar menu items visible (Marketplace and My Scrapper) but they now show placeholder screens. RESULT: ✅ App now focuses on core Google Maps scraping functionality, ✅ Both AI chat services (Lead Chat + Global Chat) use OpenAI key if available, otherwise Emergent LLM key, ✅ Marketplace and My Scrapper pages kept in sidebar but show placeholder screens, ✅ All other functionality intact: Actors, Runs, Dataset with AI chat, ✅ Backend requirements installed, ✅ Both frontend and backend services running successfully. Ready for testing of: (1) AI chat with OpenAI key, (2) Google Maps scraper functionality, (3) Placeholder pages display, (4) Core scraping workflows."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
