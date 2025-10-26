@@ -22,6 +22,7 @@ const DatasetV2 = () => {
   const [limit, setLimit] = useState(20);
   const [totalCount, setTotalCount] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [goToPageInput, setGoToPageInput] = useState('');
   const [selectedLead, setSelectedLead] = useState(null);
   const [chatOpen, setChatOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
