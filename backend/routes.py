@@ -768,8 +768,12 @@ async def global_chat(
         
         # Handle MULTIPLE runs if created (supports multiple commands in one request)
         if result.get("run_ids") and len(result["run_ids"]) > 0:
+            logger.info(f"🔄 Processing {len(result['run_ids'])} runs from chat command")
+            
             # Start ALL runs in parallel
             for idx, run_id in enumerate(result["run_ids"]):
+                logger.info(f"📋 Processing run {idx+1}/{len(result['run_ids'])}: {run_id}")
+                
                 actor_id = result.get("actor_id") if not result.get("run_ids") else (
                     result.get("actor_id") if idx == 0 else None
                 )
@@ -779,10 +783,15 @@ async def global_chat(
                 
                 # Fetch run details if not provided
                 if not actor_id or not input_data:
+                    logger.info(f"🔍 Fetching run details from database for {run_id}")
                     run = await db.runs.find_one({"id": run_id}, {"_id": 0})
                     if run:
                         actor_id = run.get("actor_id")
                         input_data = run.get("input_data")
+                        logger.info(f"✓ Found actor: {run.get('actor_name')}, input: {input_data}")
+                    else:
+                        logger.error(f"❌ Run {run_id} not found in database!")
+                        continue
                 
                 if actor_id and input_data:
                     logger.info(f"🤖 AI Agent starting run {run_id} ({idx+1}/{len(result['run_ids'])}) from chat...")
@@ -798,6 +807,8 @@ async def global_chat(
                         )
                     )
                     logger.info(f"✓ Run {run_id} started by AI Agent. Active tasks: {task_manager.get_running_count()}")
+                else:
+                    logger.error(f"❌ Missing actor_id or input_data for run {run_id}")
         # Backwards compatibility: handle single run_id
         elif result.get("run_id") and result.get("actor_id"):
             run_id = result["run_id"]
