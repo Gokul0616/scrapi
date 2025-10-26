@@ -906,6 +906,10 @@ Then FUNCTION_CALL: {"name": "view_run_details", "arguments": {"run_id": "<first
                 result = await self.stop_run(**arguments)
             elif function_name == "delete_run":
                 result = await self.delete_run(**arguments)
+            elif function_name == "abort_multiple_runs":
+                result = await self.abort_multiple_runs(**arguments)
+            elif function_name == "abort_all_runs":
+                result = await self.abort_all_runs(**arguments)
             elif function_name == "get_dataset_info":
                 result = await self.get_dataset_info()
             elif function_name == "navigate_to_page":
