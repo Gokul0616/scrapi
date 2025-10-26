@@ -502,15 +502,22 @@ Then FUNCTION_CALL: {"name": "view_run_details", "arguments": {"run_id": "<first
     async def stop_run(self, run_id: str) -> Dict[str, Any]:
         """Stop a running scraping job."""
         try:
+            # First, try to cancel the task in task_manager
+            from task_manager import get_task_manager
+            task_manager = get_task_manager()
+            task_cancelled = await task_manager.cancel_task(run_id)
+            
+            # Update database status for both running and queued runs
             result = await self.db.runs.update_one(
-                {"id": run_id, "user_id": self.user_id, "status": "running"},
+                {"id": run_id, "user_id": self.user_id, "status": {"$in": ["running", "queued"]}},
                 {"$set": {"status": "aborted", "finished_at": datetime.now(timezone.utc).isoformat()}}
             )
             
             if result.modified_count > 0:
-                return {"success": True, "message": f"Run {run_id} stopped successfully"}
+                status_msg = "Run stopped and task cancelled" if task_cancelled else "Run status updated to aborted"
+                return {"success": True, "message": f"{status_msg}: {run_id}"}
             else:
-                return {"error": "Run not found or not running"}
+                return {"error": "Run not found or not running/queued"}
         except Exception as e:
             logger.error(f"Error stopping run: {str(e)}")
             return {"error": str(e)}
