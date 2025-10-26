@@ -628,7 +628,7 @@ const DatasetV2 = () => {
                                   ))}
                                   {hasMore && (
                                     <button
-                                      onClick={() => openLinksModal(item)}
+                                      onClick={(e) => openLinksModal(item, e)}
                                       className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
                                       title={`+${allLinks.length - 5} more`}
                                     >
