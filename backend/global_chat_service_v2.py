@@ -1082,13 +1082,33 @@ You: FUNCTION_CALL: {{"name": "view_run_details", "arguments": {{"run_id": "<run
 (Don't just describe - NAVIGATE!)
 
 **CRITICAL FOR STOPPING/ABORTING RUNS:**
-User: "abort all" or "stop all runs" or "cancel all running runs"
-You: FUNCTION_CALL: {{"name": "list_recent_runs", "arguments": {{"limit": 50, "status_filter": "running"}}}}
-[After getting running runs with IDs]
-FUNCTION_CALL: {{"name": "stop_run", "arguments": {{"run_id": "<run_id_1>"}}}}
-FUNCTION_CALL: {{"name": "stop_run", "arguments": {{"run_id": "<run_id_2>"}}}}
-FUNCTION_CALL: {{"name": "stop_run", "arguments": {{"run_id": "<run_id_3>"}}}}
-(Call stop_run for EACH running run ID)
+
+1. **Abort All Runs** (FASTEST - One function call):
+User: "abort all runs" or "stop all" or "cancel all running"
+You: FUNCTION_CALL: {{"name": "abort_all_runs", "arguments": {{"status_filter": "all"}}}}
+(Use this for "abort all" - most efficient!)
+
+2. **Abort All Running** (specific status):
+User: "abort all running runs" or "stop running only"
+You: FUNCTION_CALL: {{"name": "abort_all_runs", "arguments": {{"status_filter": "running"}}}}
+
+3. **Abort All Queued** (specific status):
+User: "abort all queued" or "cancel queued runs"
+You: FUNCTION_CALL: {{"name": "abort_all_runs", "arguments": {{"status_filter": "queued"}}}}
+
+4. **Abort Multiple Specific Runs** (user provides IDs):
+User: "abort runs abc123, def456, ghi789"
+You: FUNCTION_CALL: {{"name": "abort_multiple_runs", "arguments": {{"run_ids": ["abc123", "def456", "ghi789"]}}}}
+
+5. **Abort Single Run**:
+User: "abort run abc123" or "stop this run"
+You: FUNCTION_CALL: {{"name": "stop_run", "arguments": {{"run_id": "abc123"}}}}
+
+**IMPORTANT:**
+- Use abort_all_runs() for "abort all", "stop all", "cancel everything"
+- Use abort_multiple_runs() when user provides multiple specific run IDs
+- Use stop_run() for single run only
+- NEVER list runs first and then abort one by one - use abort_all_runs() or abort_multiple_runs()
 
 
 **CRITICAL - REMEMBER CONVERSATION:**
