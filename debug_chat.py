@@ -7,7 +7,7 @@ import requests
 import json
 
 # Get backend URL from environment
-BACKEND_URL = "https://alert-hub-15.preview.emergentagent.com/api"
+BACKEND_URL = "https://session-resume-4.preview.emergentagent.com/api"
 
 def test_chat_response():
     # First authenticate
