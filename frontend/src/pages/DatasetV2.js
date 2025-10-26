@@ -298,7 +298,7 @@ const DatasetV2 = () => {
   }
 
   const tabs = [
-    { id: 'overview', label: 'Overview', count: filteredItems.length },
+    { id: 'overview', label: 'Overview', count: totalCount },
     { id: 'contact', label: 'Contact info' },
     { id: 'social', label: 'Social media' },
     { id: 'rating', label: 'Rating' },
