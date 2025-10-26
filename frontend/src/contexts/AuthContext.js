@@ -74,6 +74,15 @@ export const AuthProvider = ({ children }) => {
       setUser(user);
       localStorage.setItem('token', access_token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+      
+      // Fetch last path after successful login
+      try {
+        const pathResponse = await axios.get(`${API}/auth/last-path`);
+        setLastPath(pathResponse.data.last_path || '/home');
+      } catch (error) {
+        setLastPath('/home');
+      }
+      
       return { success: true };
     } catch (error) {
       return { success: false, error: error.response?.data?.detail || 'Login failed' };
