@@ -23,6 +23,7 @@ class User(BaseModel):
     hashed_password: str
     organization_name: Optional[str] = None
     plan: str = "Free"
+    last_path: Optional[str] = None  # Store last visited path for redirect after login
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     
 class UserResponse(BaseModel):
