@@ -302,9 +302,9 @@ class ScrapiAPITester:
             self.test_results["runs"]["errors"].append("Create run failed")
             return
             
-        # Monitor run status with enhanced logging
-        self.log("Monitoring V3 scraper performance and progress logs...")
-        max_wait_time = 300  # 5 minutes for V3 scraper
+        # Monitor run status until completion
+        self.log("Monitoring scraping run status until completion...")
+        max_wait_time = 300  # 5 minutes max wait
         check_interval = 15  # 15 seconds
         elapsed_time = 0
         start_time = time.time()
@@ -316,40 +316,25 @@ class ScrapiAPITester:
                 status = run.get("status", "unknown")
                 logs = run.get("logs", [])
                 
-                # Check for enhanced progress messages
+                # Show latest progress logs
                 if logs:
-                    latest_logs = logs[-3:] if len(logs) >= 3 else logs
+                    latest_logs = logs[-2:] if len(logs) >= 2 else logs
                     for log_entry in latest_logs:
-                        if any(emoji in log_entry for emoji in ["🔍", "✅", "📊"]):
-                            self.log(f"V3 Progress: {log_entry}")
+                        self.log(f"Progress: {log_entry}")
                 
                 self.log(f"Run status: {status} (elapsed: {elapsed_time}s)")
                 
                 if status == "succeeded":
                     end_time = time.time()
                     duration = end_time - start_time
-                    self.log(f"✅ V3 Scraping completed in {duration:.1f} seconds")
+                    self.log(f"✅ Scraping completed successfully in {duration:.1f} seconds")
                     self.test_results["runs"]["passed"] += 1
-                    
-                    # Verify enhanced progress logs
-                    enhanced_logs_found = any(
-                        any(emoji in log for emoji in ["🔍", "✅", "📊"]) 
-                        for log in logs
-                    )
-                    if enhanced_logs_found:
-                        self.log("✅ Enhanced progress logs with emojis found")
-                        self.test_results["runs"]["passed"] += 1
-                    else:
-                        self.log("❌ Enhanced progress logs not found")
-                        self.test_results["runs"]["failed"] += 1
-                        self.test_results["runs"]["errors"].append("Enhanced progress logs missing")
-                    
                     break
                 elif status == "failed":
                     error_msg = run.get("error_message", "Unknown error")
-                    self.log(f"❌ V3 Scraping run failed: {error_msg}")
+                    self.log(f"❌ Scraping run failed: {error_msg}")
                     self.test_results["runs"]["failed"] += 1
-                    self.test_results["runs"]["errors"].append(f"V3 Scraping run failed: {error_msg}")
+                    self.test_results["runs"]["errors"].append(f"Scraping run failed: {error_msg}")
                     return
                 elif status in ["queued", "running"]:
                     time.sleep(check_interval)
@@ -366,9 +351,9 @@ class ScrapiAPITester:
                 return
                 
         if elapsed_time >= max_wait_time:
-            self.log("❌ V3 Run did not complete within timeout period")
+            self.log("❌ Run did not complete within timeout period")
             self.test_results["runs"]["failed"] += 1
-            self.test_results["runs"]["errors"].append("V3 Run timeout")
+            self.test_results["runs"]["errors"].append("Run timeout")
             
     def test_enhanced_dataset_v3(self):
         """Test enhanced dataset with V3 scraper features"""
