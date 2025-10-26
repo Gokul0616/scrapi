@@ -177,6 +177,7 @@ function AppRoutes() {
       <Route path="/docs" element={<ProtectedRoute><DashboardLayout><div className="p-8">Documentation</div></DashboardLayout></ProtectedRoute>} />
       <Route path="/help" element={<ProtectedRoute><DashboardLayout><div className="p-8">Help</div></DashboardLayout></ProtectedRoute>} />
     </Routes>
+    </>
   );
 }
 
