@@ -357,197 +357,230 @@ const DatasetV2 = () => {
       </div>
 
       {/* Table */}
-      <div className="px-8 py-6">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+      <div className="px-6 py-6">
+        <div className="bg-white">
           {filteredItems.length === 0 ? (
             <div className="text-center py-16 text-gray-500">
               <Search className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-              <p className="text-lg">No leads found</p>
+              <p className="text-lg">No results found</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b-2 border-gray-200">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">#</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Business Name</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Score</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Reviews</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Address</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">City</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">State</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Contact</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Links</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="bg-gray-50">
+                    {visibleColumns.number && (
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">#</th>
+                    )}
+                    {visibleColumns.title && (
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
+                        Place name<br /><span className="text-gray-400 font-normal">title</span>
+                      </th>
+                    )}
+                    {visibleColumns.totalScore && (
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
+                        Total<br/>Score<br /><span className="text-gray-400 font-normal">totalScore</span>
+                      </th>
+                    )}
+                    {visibleColumns.reviewsCount && (
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
+                        Reviews<br/>Count<br /><span className="text-gray-400 font-normal">reviewsCount</span>
+                      </th>
+                    )}
+                    {visibleColumns.address && (
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
+                        Street<br /><span className="text-gray-400 font-normal">street</span>
+                      </th>
+                    )}
+                    {visibleColumns.city && (
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
+                        City<br /><span className="text-gray-400 font-normal">city</span>
+                      </th>
+                    )}
+                    {visibleColumns.state && (
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
+                        State<br /><span className="text-gray-400 font-normal">state</span>
+                      </th>
+                    )}
+                    {visibleColumns.countryCode && (
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
+                        Country<br/>Code<br /><span className="text-gray-400 font-normal">countryCode</span>
+                      </th>
+                    )}
+                    {visibleColumns.website && (
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
+                        Website<br /><span className="text-gray-400 font-normal">website</span>
+                      </th>
+                    )}
+                    {visibleColumns.phone && (
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
+                        Phone<br /><span className="text-gray-400 font-normal">phone</span>
+                      </th>
+                    )}
+                    {visibleColumns.category && (
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
+                        Category<br/>Name<br /><span className="text-gray-400 font-normal">categoryName</span>
+                      </th>
+                    )}
+                    {visibleColumns.url && (
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
+                        URL<br /><span className="text-gray-400 font-normal">url</span>
+                      </th>
+                    )}
+                    {visibleColumns.socialMedia && (
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
+                        Social Media<br /><span className="text-gray-400 font-normal">socialMedia</span>
+                      </th>
+                    )}
+                    {visibleColumns.actions && (
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">Actions</th>
+                    )}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody>
                   {filteredItems.map((item, index) => (
-                    <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 text-sm text-gray-500 font-medium">{index + 1}</td>
-                      <td className="px-6 py-4">
-                        <div>
-                          <div className="font-semibold text-gray-900">{item.data.title || 'N/A'}</div>
-                          {item.data.category && (
-                            <Badge variant="outline" className="mt-1 text-xs">{item.data.category}</Badge>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        {item.data.totalScore ? (
-                          <div className="flex items-center space-x-1">
-                            <span className="font-bold text-green-600">{item.data.totalScore}</span>
+                    <tr key={item.id} className="hover:bg-gray-50 border-b border-gray-100">
+                      {visibleColumns.number && (
+                        <td className="px-4 py-3 text-sm text-gray-900">{index + 1}</td>
+                      )}
+                      {visibleColumns.title && (
+                        <td className="px-4 py-3 text-sm">
+                          <div className="font-medium text-gray-900 max-w-xs truncate" title={item.data.title}>
+                            {item.data.title || '-'}
                           </div>
-                        ) : 'N/A'}
-                      </td>
-                      <td className="px-6 py-4">
-                        {item.data.rating ? (
-                          <div className="flex items-center space-x-2">
-                            <span className="text-yellow-500">⭐</span>
-                            <span className="font-medium">{item.data.rating}</span>
-                            <span className="text-gray-400 text-xs">({item.data.reviewsCount || 0})</span>
-                          </div>
-                        ) : 'N/A'}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate" title={item.data.address}>
-                        {item.data.address || 'N/A'}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{item.data.city || 'N/A'}</td>
-                      <td className="px-6 py-4 text-sm text-gray-600">{item.data.state || 'N/A'}</td>
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col space-y-1">
-                          {item.data.phone && (
-                            <div className="flex items-center space-x-1 text-xs">
-                              <Phone className="w-3 h-3 text-gray-700" />
-                              <span className="text-gray-700">{item.data.phone}</span>
-                              {item.data.phoneVerified && <CheckCircle2 className="w-3 h-3 text-green-500" title="Verified" />}
-                            </div>
-                          )}
-                          {item.data.email && (
-                            <div className="flex items-center space-x-1 text-xs">
-                              <Mail className="w-3 h-3 text-purple-600" />
-                              <span className="text-gray-700">{item.data.email}</span>
-                              {item.data.emailVerified && <CheckCircle2 className="w-3 h-3 text-green-500" title="Verified" />}
-                            </div>
-                          )}
-                          {!item.data.phone && !item.data.email && <span className="text-gray-400 text-xs">No contact</span>}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          {/* Google Maps Link */}
-                          {item.data.url && (
-                            <a 
-                              href={item.data.url} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-100 hover:bg-red-200 transition-colors"
-                              title="View on Google Maps"
-                            >
-                              <MapPin className="w-4 h-4 text-red-600" />
-                            </a>
-                          )}
-                          
-                          {/* Social Media Links */}
-                          {item.data.socialMedia?.facebook && (
-                            <a 
-                              href={item.data.socialMedia.facebook} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 hover:bg-blue-200 transition-colors"
-                              title="Facebook"
-                            >
-                              <span className="text-sm font-bold text-blue-600">f</span>
-                            </a>
-                          )}
-                          
-                          {item.data.socialMedia?.instagram && (
-                            <a 
-                              href={item.data.socialMedia.instagram} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-pink-100 hover:bg-pink-200 transition-colors"
-                              title="Instagram"
-                            >
-                              <span className="text-sm font-bold text-pink-600">📷</span>
-                            </a>
-                          )}
-                          
-                          {item.data.socialMedia?.twitter && (
-                            <a 
-                              href={item.data.socialMedia.twitter} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-sky-100 hover:bg-sky-200 transition-colors"
-                              title="Twitter/X"
-                            >
-                              <span className="text-sm font-bold text-sky-600">𝕏</span>
-                            </a>
-                          )}
-                          
-                          {item.data.socialMedia?.linkedin && (
-                            <a 
-                              href={item.data.socialMedia.linkedin} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 hover:bg-blue-200 transition-colors"
-                              title="LinkedIn"
-                            >
-                              <span className="text-sm font-bold text-blue-700">in</span>
-                            </a>
-                          )}
-                          
-                          {item.data.socialMedia?.youtube && (
-                            <a 
-                              href={item.data.socialMedia.youtube} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-100 hover:bg-red-200 transition-colors"
-                              title="YouTube"
-                            >
-                              <span className="text-sm font-bold text-red-600">▶</span>
-                            </a>
-                          )}
-                          
-                          {item.data.socialMedia?.tiktok && (
-                            <a 
-                              href={item.data.socialMedia.tiktok} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-black hover:bg-gray-800 transition-colors"
-                              title="TikTok"
-                            >
-                              <span className="text-sm font-bold text-white">🎵</span>
-                            </a>
-                          )}
-                          
-                          {item.data.website && (
+                        </td>
+                      )}
+                      {visibleColumns.totalScore && (
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {item.data.totalScore || '-'}
+                        </td>
+                      )}
+                      {visibleColumns.reviewsCount && (
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {item.data.reviewsCount || '0'}
+                        </td>
+                      )}
+                      {visibleColumns.address && (
+                        <td className="px-4 py-3 text-sm text-gray-600 max-w-xs truncate" title={item.data.address}>
+                          {item.data.address || '-'}
+                        </td>
+                      )}
+                      {visibleColumns.city && (
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {item.data.city || '-'}
+                        </td>
+                      )}
+                      {visibleColumns.state && (
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {item.data.state || '-'}
+                        </td>
+                      )}
+                      {visibleColumns.countryCode && (
+                        <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                          {item.data.countryCode || '-'}
+                        </td>
+                      )}
+                      {visibleColumns.website && (
+                        <td className="px-4 py-3 text-sm">
+                          {item.data.website ? (
                             <a 
                               href={item.data.website} 
                               target="_blank" 
                               rel="noopener noreferrer"
-                              className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
-                              title="Website"
+                              className="text-blue-600 hover:underline max-w-xs truncate block"
+                              title={item.data.website}
                             >
-                              <ExternalLink className="w-4 h-4 text-gray-600" />
+                              {item.data.website}
                             </a>
-                          )}
-                          
-                          {!item.data.url && !item.data.socialMedia && !item.data.website && (
-                            <span className="text-gray-400 text-xs">No links</span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <Button
-                          size="sm"
-                          onClick={() => openChat(item)}
-                          className="bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800 text-white"
-                        >
-                          <MessageSquare className="w-4 h-4 mr-1" />
-                          AI Chat
-                        </Button>
-                      </td>
+                          ) : '-'}
+                        </td>
+                      )}
+                      {visibleColumns.phone && (
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {item.data.phone || '-'}
+                        </td>
+                      )}
+                      {visibleColumns.category && (
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {item.data.category || '-'}
+                        </td>
+                      )}
+                      {visibleColumns.url && (
+                        <td className="px-4 py-3 text-sm">
+                          {item.data.url ? (
+                            <a 
+                              href={item.data.url} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline"
+                              title="View on Google Maps"
+                            >
+                              View Map
+                            </a>
+                          ) : '-'}
+                        </td>
+                      )}
+                      {visibleColumns.socialMedia && (
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-1">
+                            {(() => {
+                              const allLinks = [];
+                              if (item.data.socialMedia) {
+                                const social = item.data.socialMedia;
+                                if (social.facebook) allLinks.push({ platform: 'Facebook', url: social.facebook, icon: 'f', color: 'blue' });
+                                if (social.instagram) allLinks.push({ platform: 'Instagram', url: social.instagram, icon: '📷', color: 'pink' });
+                                if (social.twitter) allLinks.push({ platform: 'Twitter', url: social.twitter, icon: '𝕏', color: 'sky' });
+                                if (social.linkedin) allLinks.push({ platform: 'LinkedIn', url: social.linkedin, icon: 'in', color: 'blue' });
+                                if (social.youtube) allLinks.push({ platform: 'YouTube', url: social.youtube, icon: '▶', color: 'red' });
+                                if (social.tiktok) allLinks.push({ platform: 'TikTok', url: social.tiktok, icon: '🎵', color: 'black' });
+                              }
+                              
+                              const visibleLinks = allLinks.slice(0, 5);
+                              const hasMore = allLinks.length > 5;
+                              
+                              if (allLinks.length === 0) return <span className="text-gray-400 text-xs">-</span>;
+                              
+                              return (
+                                <>
+                                  {visibleLinks.map((link, idx) => (
+                                    <a
+                                      key={idx}
+                                      href={link.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className={`inline-flex items-center justify-center w-7 h-7 rounded-full bg-${link.color}-100 hover:bg-${link.color}-200 transition-colors`}
+                                      title={link.platform}
+                                    >
+                                      <span className={`text-xs font-bold text-${link.color}-600`}>{link.icon}</span>
+                                    </a>
+                                  ))}
+                                  {hasMore && (
+                                    <button
+                                      onClick={() => openLinksModal(item)}
+                                      className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                                      title={`+${allLinks.length - 5} more`}
+                                    >
+                                      <MoreHorizontal className="w-4 h-4 text-gray-600" />
+                                    </button>
+                                  )}
+                                </>
+                              );
+                            })()}
+                          </div>
+                        </td>
+                      )}
+                      {visibleColumns.actions && (
+                        <td className="px-4 py-3">
+                          <Button
+                            size="sm"
+                            onClick={() => openChat(item)}
+                            className="bg-blue-600 hover:bg-blue-700 text-white text-xs"
+                          >
+                            <MessageSquare className="w-3 h-3 mr-1" />
+                            AI Chat
+                          </Button>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
