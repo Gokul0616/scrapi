@@ -2944,8 +2944,8 @@ class ScrapiAPITester:
             self.log("❌ Authentication failed - stopping tests")
             return
             
-        # Test Global Chat Assistant as per review requirements
-        self.test_global_chat_assistant_review()
+        # Test the new /api/actors-used endpoint as requested in review
+        self.test_actors_used_endpoint()
         
         # Print summary
         self.print_summary()
