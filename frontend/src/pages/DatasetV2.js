@@ -633,7 +633,7 @@ const DatasetV2 = () => {
                         </td>
                       )}
                       {visibleColumns.socialMedia && (
-                        <td className="px-4 py-3">
+                        <td className="px-6 py-4">
                           <div className="flex items-center gap-1">
                             {(() => {
                               const allLinks = [];
@@ -682,7 +682,7 @@ const DatasetV2 = () => {
                         </td>
                       )}
                       {visibleColumns.actions && (
-                        <td className="px-4 py-3">
+                        <td className="px-6 py-4">
                           <Button
                             size="sm"
                             onClick={() => openChat(item)}
