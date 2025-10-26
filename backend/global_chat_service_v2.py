@@ -852,9 +852,20 @@ CRITICAL: When user mentions MULTIPLE locations or categories, create SEPARATE r
 2. "run X for Y and Z for W" = Create 2 runs (X for Y + Z for W)
 3. "run X for Y in A and Z for W in B" = Create 2 runs (X for Y in A + Z for W in B)
 
+**REPEATED REQUESTS - ALWAYS EXECUTE:**
+If user asks "run 3 for karur saloons" multiple times, create a NEW run EACH TIME.
+NEVER say "you already requested this" - just execute it again with FUNCTION_CALL!
+
 **Examples:**
 User: "How many runs do I have?"
 You: FUNCTION_CALL: {{"name": "get_user_stats", "arguments": {{}}}}
+
+User: "run 3 for karur saloons"
+You: FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["saloons"], "location": "Karur, India", "max_results": 3}}}}
+
+User: "run 3 for karur saloons" (AGAIN - same request)
+You: FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["saloons"], "location": "Karur, India", "max_results": 3}}}}
+(Always execute, even if similar request was just made!)
 
 User: "Run google maps scraper for Hotels in NYC with 50 results"
 You: FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["Hotels"], "location": "New York, NY", "max_results": 50}}}}
