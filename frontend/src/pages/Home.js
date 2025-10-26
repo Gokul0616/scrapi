@@ -14,6 +14,9 @@ function Home() {
 
   useEffect(() => {
     fetchData();
+    // Auto-refresh every 5 seconds to show new runs
+    const interval = setInterval(fetchData, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchData = async () => {
