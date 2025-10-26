@@ -111,7 +111,12 @@ const RunsV3 = () => {
       setSelectedRuns([]);
     } catch (error) {
       console.error('Failed to abort runs:', error);
-      alert(error.response?.data?.detail || 'Failed to abort runs');
+      setAlertModal({
+        show: true,
+        type: 'error',
+        title: 'Abort Failed',
+        message: error.response?.data?.detail || 'Failed to abort runs'
+      });
     } finally {
       runIds.forEach(id => {
         setAbortingRuns(prev => {
