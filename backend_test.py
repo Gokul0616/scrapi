@@ -3162,17 +3162,33 @@ class ScrapiAPITester:
             self.test_results["global_chat"]["errors"].append("LLM integration test failed")
             
     def run_all_tests(self):
-        """Run all test suites"""
-        self.log("Starting Scrapi Backend API Tests...")
+        """Run backend API tests with priority on review request"""
+        self.log("🚀 Starting Backend API Testing - PRIORITY: Country Code Extraction Review")
         self.log(f"Backend URL: {self.base_url}")
         
-        # Test authentication first
-        if not self.test_auth_flow():
-            self.log("❌ Authentication failed - stopping tests")
-            return
+        try:
+            # Run the specific review request test first
+            self.log("=" * 80)
+            self.log("PRIORITY: Running Review Request Test - Country Code Extraction")
+            self.log("=" * 80)
+            review_success = self.test_country_code_extraction_review()
             
-        # Test the new /api/actors-used endpoint as requested in review
-        self.test_actors_used_endpoint()
+            if review_success:
+                self.log("🎉 REVIEW REQUEST TEST COMPLETED SUCCESSFULLY!")
+            else:
+                self.log("❌ REVIEW REQUEST TEST FAILED!")
+            
+            self.log("\n" + "=" * 80)
+            self.log("ADDITIONAL TESTS: Running other backend tests")
+            self.log("=" * 80)
+            
+            # Test the new /api/actors-used endpoint as requested in review
+            self.test_actors_used_endpoint()
+            
+        except Exception as e:
+            self.log(f"❌ Unexpected error during testing: {e}")
+            import traceback
+            traceback.print_exc()
         
         # Print summary
         self.print_summary()
