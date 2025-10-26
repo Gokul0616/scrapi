@@ -473,6 +473,16 @@ const DatasetV2 = () => {
                           {item.data.totalScore || '-'}
                         </td>
                       )}
+                      {visibleColumns.rating && (
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {item.data.rating ? (
+                            <div className="flex items-center gap-1">
+                              <span className="text-yellow-500">⭐</span>
+                              <span className="font-medium">{item.data.rating}</span>
+                            </div>
+                          ) : '-'}
+                        </td>
+                      )}
                       {visibleColumns.reviewsCount && (
                         <td className="px-4 py-3 text-sm text-gray-900">
                           {item.data.reviewsCount || '0'}
