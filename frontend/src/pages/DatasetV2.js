@@ -18,6 +18,10 @@ const DatasetV2 = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
+  const [totalCount, setTotalCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [selectedLead, setSelectedLead] = useState(null);
   const [chatOpen, setChatOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
@@ -49,7 +53,7 @@ const DatasetV2 = () => {
 
   useEffect(() => {
     fetchDataset();
-  }, [runId]);
+  }, [runId, page, limit, searchQuery]);
 
   useEffect(() => {
     if (selectedLead) {
