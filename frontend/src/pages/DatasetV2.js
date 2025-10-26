@@ -590,11 +590,192 @@ const DatasetV2 = () => {
         </div>
       </div>
 
+      {/* Links Modal */}
+      {showLinksModal && selectedLinksItem && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">All Social Media Links</h3>
+              <button onClick={closeLinksModal} className="text-gray-400 hover:text-gray-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="px-6 py-4 overflow-y-auto max-h-[60vh]">
+              <div className="mb-4">
+                <h4 className="font-medium text-gray-900 mb-2">{selectedLinksItem.data.title}</h4>
+                <p className="text-sm text-gray-600">{selectedLinksItem.data.address}</p>
+              </div>
+              <div className="space-y-3">
+                {selectedLinksItem.data.socialMedia && Object.entries(selectedLinksItem.data.socialMedia).map(([platform, url]) => (
+                  <div key={platform} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                        platform === 'facebook' ? 'bg-blue-100' :
+                        platform === 'instagram' ? 'bg-pink-100' :
+                        platform === 'twitter' ? 'bg-sky-100' :
+                        platform === 'linkedin' ? 'bg-blue-100' :
+                        platform === 'youtube' ? 'bg-red-100' :
+                        platform === 'tiktok' ? 'bg-black' : 'bg-gray-100'
+                      }`}>
+                        <span className={`text-sm font-bold ${
+                          platform === 'facebook' ? 'text-blue-600' :
+                          platform === 'instagram' ? 'text-pink-600' :
+                          platform === 'twitter' ? 'text-sky-600' :
+                          platform === 'linkedin' ? 'text-blue-700' :
+                          platform === 'youtube' ? 'text-red-600' :
+                          platform === 'tiktok' ? 'text-white' : 'text-gray-600'
+                        }`}>
+                          {platform === 'facebook' ? 'f' :
+                           platform === 'instagram' ? '📷' :
+                           platform === 'twitter' ? '𝕏' :
+                           platform === 'linkedin' ? 'in' :
+                           platform === 'youtube' ? '▶' :
+                           platform === 'tiktok' ? '🎵' : ''}
+                        </span>
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-900 capitalize">{platform}</div>
+                        <div className="text-sm text-gray-600 truncate max-w-md">{url}</div>
+                      </div>
+                    </div>
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md transition-colors"
+                    >
+                      Visit
+                    </a>
+                  </div>
+                ))}
+                {selectedLinksItem.data.website && (
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                        <ExternalLink className="w-5 h-5 text-gray-600" />
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-900">Website</div>
+                        <div className="text-sm text-gray-600 truncate max-w-md">{selectedLinksItem.data.website}</div>
+                      </div>
+                    </div>
+                    <a
+                      href={selectedLinksItem.data.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md transition-colors"
+                    >
+                      Visit
+                    </a>
+                  </div>
+                )}
+                {selectedLinksItem.data.url && (
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                        <MapPin className="w-5 h-5 text-red-600" />
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-900">Google Maps</div>
+                        <div className="text-sm text-gray-600">View location on map</div>
+                      </div>
+                    </div>
+                    <a
+                      href={selectedLinksItem.data.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md transition-colors"
+                    >
+                      View Map
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Column Settings Modal */}
+      {showColumnSettings && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">Table Settings</h3>
+              <button onClick={() => setShowColumnSettings(false)} className="text-gray-400 hover:text-gray-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="px-6 py-4 max-h-96 overflow-y-auto">
+              <p className="text-sm text-gray-600 mb-4">Select columns to display in the table:</p>
+              <div className="space-y-2">
+                {Object.entries({
+                  number: '#',
+                  title: 'Place name',
+                  totalScore: 'Total Score',
+                  reviewsCount: 'Reviews Count',
+                  address: 'Street',
+                  city: 'City',
+                  state: 'State',
+                  countryCode: 'Country Code',
+                  website: 'Website',
+                  phone: 'Phone',
+                  category: 'Category Name',
+                  url: 'URL',
+                  socialMedia: 'Social Media',
+                  actions: 'Actions'
+                }).map(([key, label]) => (
+                  <label key={key} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={visibleColumns[key]}
+                      onChange={(e) => setVisibleColumns(prev => ({ ...prev, [key]: e.target.checked }))}
+                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <span className="text-sm text-gray-900">{label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setVisibleColumns({
+                    number: true,
+                    title: true,
+                    totalScore: true,
+                    rating: true,
+                    reviewsCount: true,
+                    address: true,
+                    city: true,
+                    state: true,
+                    countryCode: true,
+                    website: true,
+                    phone: true,
+                    email: true,
+                    category: true,
+                    socialMedia: true,
+                    url: true,
+                    actions: true
+                  });
+                }}
+              >
+                Reset
+              </Button>
+              <Button onClick={() => setShowColumnSettings(false)} className="bg-blue-600 hover:bg-blue-700">
+                Apply
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* AI Chat Sidebar */}
       {chatOpen && (
         <div className="fixed inset-y-0 right-0 w-1/3 bg-white shadow-2xl border-l border-gray-200 flex flex-col z-50">
           {/* Chat Header */}
-          <div className="bg-gradient-to-r from-gray-800 to-gray-900 text-white px-6 py-4 flex items-center justify-between">
+          <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-4 flex items-center justify-between">
             <div>
               <h3 className="font-semibold text-lg">AI Engagement Assistant</h3>
               <p className="text-sm opacity-90">{selectedLead?.data.title}</p>
@@ -629,7 +810,7 @@ const DatasetV2 = () => {
               <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[80%] rounded-lg px-4 py-3 ${
                   msg.role === 'user'
-                    ? 'bg-gray-800 text-white'
+                    ? 'bg-blue-600 text-white'
                     : 'bg-gray-100 text-gray-900'
                 }`}>
                   {msg.role === 'user' ? (
@@ -671,7 +852,7 @@ const DatasetV2 = () => {
               <Button
                 onClick={handleSendMessage}
                 disabled={chatLoading || !chatInput.trim()}
-                className="bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800 text-white"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
               >
                 <Send className="w-4 h-4" />
               </Button>
