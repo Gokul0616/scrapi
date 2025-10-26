@@ -215,14 +215,14 @@ You: First get recent runs, then navigate to the latest one
             },
             {
                 "name": "navigate_to_page",
-                "description": "Navigate to a specific page in the application. Use this when user wants to go to or view a specific section.",
+                "description": "Navigate to a specific page in the application. ONLY use when user EXPLICITLY asks to go somewhere or see something specific. DO NOT use for greetings like 'hello', 'hi', 'thanks'.",
                 "parameters": {
                     "type": "object",
                     "properties": {
                         "page": {
                             "type": "string",
-                            "description": "Page to navigate to",
-                            "enum": ["dashboard", "actors", "runs", "datasets", "leads", "proxies"]
+                            "description": "Page to navigate to. Available pages: home, actors, runs, datasets, leads, proxies, store, marketplace",
+                            "enum": ["home", "actors", "runs", "datasets", "leads", "proxies", "store", "marketplace"]
                         }
                     },
                     "required": ["page"]
