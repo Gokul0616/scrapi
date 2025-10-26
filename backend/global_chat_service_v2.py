@@ -928,6 +928,17 @@ You: FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_na
 FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["pizza places"], "location": "Chicago, IL", "max_results": 5}}}}
 FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["bakeries"], "location": "Miami, FL", "max_results": 2}}}}
 
+**CRITICAL FOR LEADS/DATASET NAVIGATION:**
+User: "show leads" or "navigate to first completed dataset" or "view my data"
+You: FUNCTION_CALL: {{"name": "list_recent_runs", "arguments": {{"limit": 10, "status_filter": "succeeded"}}}}
+[After getting results with run IDs]
+FUNCTION_CALL: {{"name": "view_run_details", "arguments": {{"run_id": "<first_run_id_from_results>"}}}}
+
+User: "yes" or "1" or "show 1" (after you listed runs)
+You: FUNCTION_CALL: {{"name": "view_run_details", "arguments": {{"run_id": "<run_id_from_previous_context>"}}}}
+(Don't just describe - NAVIGATE!)
+
+
 **CRITICAL - REMEMBER CONVERSATION:**
 - ALWAYS refer to previous messages when user asks follow-up questions
 - When user says "run 5 more", check history for what they ran before
