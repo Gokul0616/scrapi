@@ -698,6 +698,51 @@ const RunsV3 = () => {
           </div>
         </div>
       )}
+
+      {/* Abort Confirmation Modal */}
+      {showAbortModal && abortModalData && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setShowAbortModal(false)}>
+          <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
+                <AlertCircle className="w-6 h-6 text-orange-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  Abort Run?
+                </h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Are you sure you want to abort this scraping run? This action cannot be undone.
+                </p>
+                <div className="bg-gray-50 rounded p-3 mb-4">
+                  <p className="text-xs text-gray-500 mb-1">Run ID</p>
+                  <p className="text-sm font-mono text-gray-900">{abortModalData.id}</p>
+                  <p className="text-xs text-gray-500 mt-2 mb-1">Task</p>
+                  <p className="text-sm text-gray-900">{formatTaskDescription(abortModalData)}</p>
+                </div>
+                <div className="flex items-center gap-3 justify-end">
+                  <Button
+                    onClick={() => setShowAbortModal(false)}
+                    variant="outline"
+                    size="sm"
+                    className="px-4 py-2"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={confirmAbort}
+                    size="sm"
+                    className="px-4 py-2 bg-orange-600 text-white hover:bg-orange-700"
+                  >
+                    <StopCircle className="w-4 h-4 mr-2" />
+                    Abort Run
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
