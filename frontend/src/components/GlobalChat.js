@@ -235,8 +235,7 @@ const GlobalChat = () => {
         if (action === 'navigate' && page) {
           setTimeout(() => {
             const pageMap = {
-              'dashboard': '/',
-              'home': '/',
+              'home': '/home',
               'actors': '/actors',
               'runs': '/runs',
               'datasets': '/datasets',
