@@ -49,6 +49,7 @@ Every time the user asks you to DO something, you MUST call the appropriate func
 - "run X for Y" → ALWAYS call fill_and_start_scraper (EVEN IF SIMILAR REQUEST WAS MADE BEFORE)
 - "show me Z" → ALWAYS call navigate_to_page or list functions
 - "export data" → ALWAYS call export_dataset
+- "abort all" / "stop all runs" → First list_recent_runs(status_filter="running"), then stop_run for EACH running run
 
 **CRITICAL: EVERY RUN REQUEST IS INDEPENDENT**
 - NEVER refuse to create a run because a similar one was made before
