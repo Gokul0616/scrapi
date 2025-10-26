@@ -84,13 +84,16 @@ const GlobalChat = () => {
     if (isOpen) return; // Don't drag when chat is open
     
     setIsDragging(true);
+    setDragMoved(false); // Reset drag moved flag
     const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
     const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
     
     const rect = buttonRef.current.getBoundingClientRect();
     setDragStart({
       x: clientX - rect.left,
-      y: clientY - rect.top
+      y: clientY - rect.top,
+      startX: clientX,
+      startY: clientY
     });
     setCurrentPos({ x: rect.left, y: rect.top });
   };
