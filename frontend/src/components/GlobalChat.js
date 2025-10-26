@@ -266,7 +266,7 @@ const GlobalChat = () => {
         // Execute run details viewing - navigate to dataset page with run_id
         if (action === 'view_run' && run_id) {
           setTimeout(() => {
-            navigate(`/datasets?run_id=${run_id}`);
+            navigate(`/dataset/${run_id}`);
           }, 800);
         }
         
