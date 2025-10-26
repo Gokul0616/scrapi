@@ -127,14 +127,18 @@ Help the user craft a winning approach to engage with {business_name}."""
             prompt = f"Create a personalized {channel} outreach template for this business. Make it professional, concise, and focused on value. Include placeholders for customization."
 
             # Initialize LlmChat client
+            lead_id = lead_data.get('id', 'unknown')
+            session_id = f"lead_template_{lead_id}_{channel}"
+            
             chat_client = LlmChat(
                 api_key=self.api_key,
-                model="gpt-4o-mini",
-                system_prompt=system_message
-            )
+                session_id=session_id,
+                system_message=system_message
+            ).with_model("openai", "gpt-4o-mini")
 
             # Send message and get response
-            response = await chat_client.chat(UserMessage(content=prompt))
+            user_msg = UserMessage(text=prompt)
+            response = await chat_client.send_message(user_msg)
             
             logger.info(f"Generated {channel} template for lead: {lead_data.get('title', 'Unknown')}")
             return response
