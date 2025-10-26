@@ -8,7 +8,7 @@ import json
 import re
 
 # Get backend URL from environment
-BACKEND_URL = "https://pixel-perfect-ui-18.preview.emergentagent.com/api"
+BACKEND_URL = "https://dataset-gallery.preview.emergentagent.com/api"
 
 def test_run_creation():
     # Authenticate
