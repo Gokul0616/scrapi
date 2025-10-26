@@ -465,22 +465,59 @@ async def get_run(run_id: str, current_user: dict = Depends(get_current_user)):
     return run
 
 # ============= Dataset Routes =============
-@router.get("/datasets/{run_id}/items", response_model=List[DatasetItem])
-async def get_dataset_items(run_id: str, current_user: dict = Depends(get_current_user)):
-    """Get dataset items for a run."""
+@router.get("/datasets/{run_id}/items")
+async def get_dataset_items(
+    run_id: str, 
+    current_user: dict = Depends(get_current_user),
+    page: int = 1,
+    limit: int = 20,
+    search: Optional[str] = None
+):
+    """Get dataset items for a run with pagination."""
     # Verify run belongs to user
     run = await db.runs.find_one({"id": run_id, "user_id": current_user['id']})
     if not run:
         raise HTTPException(status_code=404, detail="Run not found")
     
-    items = await db.dataset_items.find({"run_id": run_id}, {"_id": 0}).to_list(10000)
+    # Build query
+    query = {"run_id": run_id}
+    
+    # Add search filter (search across all data fields)
+    if search:
+        # Search in nested data field
+        query["$or"] = [
+            {"data.title": {"$regex": search, "$options": "i"}},
+            {"data.address": {"$regex": search, "$options": "i"}},
+            {"data.city": {"$regex": search, "$options": "i"}},
+            {"data.category": {"$regex": search, "$options": "i"}},
+            {"data.phone": {"$regex": search, "$options": "i"}},
+            {"data.email": {"$regex": search, "$options": "i"}}
+        ]
+    
+    # Get total count
+    total_count = await db.dataset_items.count_documents(query)
+    
+    # Calculate skip
+    skip = (page - 1) * limit
+    
+    # Get items with pagination
+    items = await db.dataset_items.find(
+        query,
+        {"_id": 0}
+    ).skip(skip).limit(limit).to_list(limit)
     
     # Convert datetime strings
     for item in items:
         if isinstance(item.get('created_at'), str):
             item['created_at'] = datetime.fromisoformat(item['created_at'])
     
-    return items
+    return {
+        "items": items,
+        "total": total_count,
+        "page": page,
+        "limit": limit,
+        "total_pages": (total_count + limit - 1) // limit
+    }
 
 @router.get("/datasets/{run_id}/export")
 async def export_dataset(run_id: str, format: str = "json", current_user: dict = Depends(get_current_user)):
