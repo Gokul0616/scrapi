@@ -42,50 +42,18 @@ class LeadChatService:
             # Build system message with lead context
             system_message = self._build_system_message(lead_data)
 
-            # Create messages for OpenAI
-            messages = [
-                {"role": "system", "content": system_message},
-                {"role": "user", "content": user_message}
-            ]
+            # Initialize LlmChat client
+            chat_client = LlmChat(
+                api_key=self.api_key,
+                model="gpt-4o-mini",
+                system_prompt=system_message
+            )
 
-            # Send message and get response using OpenAI client (with custom base URL for Emergent)
-            # Try with current client, fallback to Emergent if OpenAI fails
-            try:
-                response = self.client.chat.completions.create(
-                    model="gpt-4o-mini",
-                    messages=messages,
-                    max_tokens=1000,
-                    temperature=0.7
-                )
-                result = response.choices[0].message.content
-            except Exception as api_error:
-                # If OpenAI fails, automatically fallback to Emergent LLM key
-                if self.using_openai:
-                    logger.warning(f"OpenAI API error: {str(api_error)}, falling back to Emergent LLM key")
-                    emergent_key = os.getenv('EMERGENT_LLM_KEY')
-                    if emergent_key:
-                        fallback_client = OpenAI(
-                            api_key=emergent_key,
-                            base_url="https://llm.emergentmethods.ai/v1"
-                        )
-                        response = fallback_client.chat.completions.create(
-                            model="gpt-4o-mini",
-                            messages=messages,
-                            max_tokens=1000,
-                            temperature=0.7
-                        )
-                        result = response.choices[0].message.content
-                        # Update instance to use Emergent key going forward
-                        self.client = fallback_client
-                        self.using_openai = False
-                        logger.info("Successfully switched to Emergent LLM key")
-                    else:
-                        raise api_error
-                else:
-                    raise api_error
-
+            # Send message and get response
+            response = await chat_client.chat(UserMessage(content=user_message))
+            
             logger.info(f"Generated engagement advice for lead: {lead_data.get('title', 'Unknown')}")
-            return result
+            return response
         
         except Exception as e:
             logger.error(f"Error generating engagement advice: {str(e)}")
