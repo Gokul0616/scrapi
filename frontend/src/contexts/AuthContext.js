@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(localStorage.getItem('token'));
+  const [lastPath, setLastPath] = useState(null);
 
   useEffect(() => {
     if (USE_MOCK) {
@@ -28,6 +29,7 @@ export const AuthProvider = ({ children }) => {
     } else if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       fetchUser();
+      fetchLastPath();
     } else {
       setLoading(false);
     }
