@@ -1,8 +1,7 @@
 import logging
 import os
 from typing import Dict, Any, List
-from openai import OpenAI
-import litellm
+from emergentintegrations.llm.chat import LlmChat, UserMessage
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -10,32 +9,17 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 class LeadChatService:
-    """Service for AI-powered lead engagement advice using OpenAI with Emergent LLM fallback."""
+    """Service for AI-powered lead engagement advice using Emergent LLM."""
 
     def __init__(self):
-        # Try OpenAI first, fallback to Emergent LLM key
-        openai_key = os.getenv('OPENAI_API_KEY')
+        # Get Emergent LLM key
         emergent_key = os.getenv('EMERGENT_LLM_KEY')
         
-        if not openai_key and not emergent_key:
-            raise ValueError("Neither OPENAI_API_KEY nor EMERGENT_LLM_KEY found in environment variables")
+        if not emergent_key:
+            raise ValueError("EMERGENT_LLM_KEY not found in environment variables")
         
-        # Determine which key type we're using
-        self.using_openai = bool(openai_key)
-        self.api_key = openai_key if self.using_openai else emergent_key
-        logger.info(f"LeadChatService initialized with {'OpenAI' if self.using_openai else 'Emergent LLM'} key")
-        
-        # Use appropriate client
-        if self.using_openai:
-            self.client = OpenAI(api_key=self.api_key)
-            self.use_litellm = False
-        else:
-            # Use custom OpenAI-compatible endpoint for Emergent key
-            self.client = OpenAI(
-                api_key=self.api_key,
-                base_url="https://llm.emergentmethods.ai/v1"
-            )
-            self.use_litellm = False  # Use OpenAI client with custom base URL
+        self.api_key = emergent_key
+        logger.info(f"LeadChatService initialized with Emergent LLM key")
     
     async def get_engagement_advice(
         self,
