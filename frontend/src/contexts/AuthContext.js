@@ -47,6 +47,25 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const fetchLastPath = async () => {
+    try {
+      const response = await axios.get(`${API}/auth/last-path`);
+      setLastPath(response.data.last_path || '/home');
+    } catch (error) {
+      console.error('Failed to fetch last path:', error);
+      setLastPath('/home');
+    }
+  };
+
+  const updateLastPath = async (path) => {
+    try {
+      await axios.patch(`${API}/auth/last-path`, { last_path: path });
+      setLastPath(path);
+    } catch (error) {
+      console.error('Failed to update last path:', error);
+    }
+  };
+
   const login = async (username, password) => {
     try {
       const response = await axios.post(`${API}/auth/login`, { username, password });
