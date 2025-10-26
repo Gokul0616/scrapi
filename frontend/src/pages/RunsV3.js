@@ -210,15 +210,25 @@ const RunsV3 = () => {
 
   const abortSelectedRuns = async () => {
     if (selectedRuns.length === 0) {
-      alert('No runs selected');
+      setAlertModal({
+        show: true,
+        type: 'info',
+        title: 'No Selection',
+        message: 'No runs selected'
+      });
       return;
     }
 
-    if (!window.confirm(`Are you sure you want to abort ${selectedRuns.length} selected run(s)?`)) {
-      return;
-    }
-
-    await abortMultipleRuns(selectedRuns);
+    // Show confirmation modal
+    setConfirmModal({
+      show: true,
+      type: 'warning',
+      title: 'Abort Selected Runs',
+      message: `Are you sure you want to abort ${selectedRuns.length} selected run(s)?`,
+      onConfirm: async () => {
+        await abortMultipleRuns(selectedRuns);
+      }
+    });
   };
 
   const getStatusDisplay = (status) => {
