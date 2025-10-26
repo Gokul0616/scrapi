@@ -76,14 +76,16 @@ export const AuthProvider = ({ children }) => {
       axios.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
       
       // Fetch last path after successful login
+      let redirectPath = '/home';
       try {
         const pathResponse = await axios.get(`${API}/auth/last-path`);
-        setLastPath(pathResponse.data.last_path || '/home');
+        redirectPath = pathResponse.data.last_path || '/home';
+        setLastPath(redirectPath);
       } catch (error) {
         setLastPath('/home');
       }
       
-      return { success: true };
+      return { success: true, redirectPath };
     } catch (error) {
       return { success: false, error: error.response?.data?.detail || 'Login failed' };
     }
