@@ -464,6 +464,202 @@ async def get_run(run_id: str, current_user: dict = Depends(get_current_user)):
     
     return run
 
+@router.delete("/runs/{run_id}/abort")
+async def abort_run(run_id: str, current_user: dict = Depends(get_current_user)):
+    """Abort a running or queued scraping job."""
+    try:
+        # Verify run belongs to user and is in abortable state
+        run = await db.runs.find_one({
+            "id": run_id, 
+            "user_id": current_user['id'], 
+            "status": {"$in": ["running", "queued"]}
+        })
+        
+        if not run:
+            raise HTTPException(
+                status_code=404, 
+                detail="Run not found or not in running/queued state"
+            )
+        
+        # Try to cancel the task in task_manager
+        task_cancelled = await task_manager.cancel_task(run_id)
+        
+        # Update database status to aborted
+        result = await db.runs.update_one(
+            {"id": run_id, "user_id": current_user['id']},
+            {
+                "$set": {
+                    "status": "aborted",
+                    "finished_at": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        )
+        
+        if result.modified_count > 0:
+            status_msg = "Run aborted and task cancelled" if task_cancelled else "Run status updated to aborted"
+            logger.info(f"{status_msg}: {run_id}")
+            return {
+                "success": True,
+                "message": status_msg,
+                "run_id": run_id,
+                "task_cancelled": task_cancelled
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Failed to abort run")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error aborting run {run_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error aborting run: {str(e)}")
+
+@router.post("/runs/abort-multiple")
+async def abort_multiple_runs(
+    run_ids: List[str], 
+    current_user: dict = Depends(get_current_user)
+):
+    """Abort multiple running or queued scraping jobs."""
+    try:
+        results = {
+            "success": [],
+            "failed": [],
+            "not_found": []
+        }
+        
+        for run_id in run_ids:
+            try:
+                # Verify run belongs to user and is in abortable state
+                run = await db.runs.find_one({
+                    "id": run_id,
+                    "user_id": current_user['id'],
+                    "status": {"$in": ["running", "queued"]}
+                })
+                
+                if not run:
+                    results["not_found"].append(run_id)
+                    continue
+                
+                # Try to cancel the task
+                task_cancelled = await task_manager.cancel_task(run_id)
+                
+                # Update database status
+                update_result = await db.runs.update_one(
+                    {"id": run_id, "user_id": current_user['id']},
+                    {
+                        "$set": {
+                            "status": "aborted",
+                            "finished_at": datetime.now(timezone.utc).isoformat()
+                        }
+                    }
+                )
+                
+                if update_result.modified_count > 0:
+                    results["success"].append({
+                        "run_id": run_id,
+                        "task_cancelled": task_cancelled
+                    })
+                    logger.info(f"Aborted run: {run_id}, task_cancelled: {task_cancelled}")
+                else:
+                    results["failed"].append(run_id)
+                    
+            except Exception as e:
+                logger.error(f"Error aborting run {run_id}: {str(e)}")
+                results["failed"].append(run_id)
+        
+        return {
+            "success": True,
+            "results": results,
+            "total_requested": len(run_ids),
+            "total_aborted": len(results["success"]),
+            "total_failed": len(results["failed"]),
+            "total_not_found": len(results["not_found"])
+        }
+        
+    except Exception as e:
+        logger.error(f"Error in abort_multiple_runs: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error aborting runs: {str(e)}")
+
+@router.post("/runs/abort-all")
+async def abort_all_runs(
+    status_filter: Optional[str] = "running",
+    current_user: dict = Depends(get_current_user)
+):
+    """Abort all running or queued runs for the current user."""
+    try:
+        # Validate status filter
+        valid_statuses = ["running", "queued", "all"]
+        if status_filter not in valid_statuses:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid status filter. Must be one of: {valid_statuses}"
+            )
+        
+        # Build query based on status filter
+        query = {"user_id": current_user['id']}
+        if status_filter == "all":
+            query["status"] = {"$in": ["running", "queued"]}
+        else:
+            query["status"] = status_filter
+        
+        # Find all matching runs
+        runs = await db.runs.find(query, {"_id": 0, "id": 1}).to_list(length=None)
+        run_ids = [run["id"] for run in runs]
+        
+        if not run_ids:
+            return {
+                "success": True,
+                "message": f"No {status_filter} runs found to abort",
+                "total_aborted": 0
+            }
+        
+        # Use the abort_multiple_runs logic
+        results = {
+            "success": [],
+            "failed": []
+        }
+        
+        for run_id in run_ids:
+            try:
+                # Try to cancel the task
+                task_cancelled = await task_manager.cancel_task(run_id)
+                
+                # Update database status
+                update_result = await db.runs.update_one(
+                    {"id": run_id, "user_id": current_user['id']},
+                    {
+                        "$set": {
+                            "status": "aborted",
+                            "finished_at": datetime.now(timezone.utc).isoformat()
+                        }
+                    }
+                )
+                
+                if update_result.modified_count > 0:
+                    results["success"].append({
+                        "run_id": run_id,
+                        "task_cancelled": task_cancelled
+                    })
+                else:
+                    results["failed"].append(run_id)
+                    
+            except Exception as e:
+                logger.error(f"Error aborting run {run_id}: {str(e)}")
+                results["failed"].append(run_id)
+        
+        return {
+            "success": True,
+            "message": f"Aborted {len(results['success'])} {status_filter} runs",
+            "results": results,
+            "total_aborted": len(results["success"]),
+            "total_failed": len(results["failed"])
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in abort_all_runs: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error aborting runs: {str(e)}")
+
 # ============= Dataset Routes =============
 @router.get("/datasets/{run_id}/items")
 async def get_dataset_items(
