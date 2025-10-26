@@ -349,10 +349,10 @@ frontend:
           agent: "main"
           comment: "🎨 MARKDOWN RENDERING ADDED: User reported AI chat responses showing raw markdown symbols (*, #, etc.) instead of formatted text. IMPLEMENTED: (1) Added ReactMarkdown + remarkGfm imports to DatasetV2.js, (2) Updated chat message rendering to use ReactMarkdown for assistant messages (user messages stay as plain text), (3) Added prose styling for proper markdown formatting (headings, bold, lists, code blocks), (4) Now matches ChatGPT formatting - **bold** shows as bold, # shows as heading, etc. (5) Email templates and AI responses now properly formatted without raw symbols. Frontend restarted. Leads AI chat now renders markdown beautifully like global chat does."
 
-  - task: "Redesigned Runs Page"
+  - task: "Redesigned Runs Page - Apify Pixel-Perfect Replica"
     implemented: true
-    working: true
-    file: "frontend/src/pages/RunsV2.js"
+    working: "NA"
+    file: "frontend/src/pages/RunsV3.js, backend/routes.py, backend/models.py"
     stuck_count: 0
     priority: "high"
     needs_retesting: true
@@ -360,6 +360,9 @@ frontend:
         - working: true
           agent: "main"
           comment: "Modern table-based runs dashboard with filters (All, Running, Succeeded, Failed), status icons, enhanced stats display, gradient buttons, improved search functionality. Auto-refresh every 5 seconds for real-time updates."
+        - working: "NA"
+          agent: "main"
+          comment: "🎯 PIXEL-PERFECT APIFY RUNS REPLICA IMPLEMENTED: User requested redesign to match Apify's runs screen exactly. BACKEND CHANGES: (1) Updated Run model to add build_number (Optional[str]) and origin (str, default='Web') fields, (2) Completely rewrote /api/runs endpoint to support pagination with query params: page, limit, search (run ID), status filter, sort_by, sort_order, (3) Returns paginated response: {runs, total, page, limit, total_pages}, (4) Added sorting by started_at, origin with asc/desc support, (5) Search filters by run ID with regex. FRONTEND CHANGES: (1) Created RunsV3.js with clean Apify-style design, (2) Header: 'Runs (count)' title + API button (top right), (3) Search: 'Search by run ID' input field + 'X recent runs' text, (4) Table columns: Status (checkmark icons) | Actor (icon+name in same cell) | Task (description) | Results (blue number) | Usage ($ format) | Started (sortable with date/time) | Finished (date/time) | Duration (Xs format) | Build (blue link style) | Origin (Web/sortable), (5) Status icons: green checkmark (succeeded), red X (failed), blue clock pulse (running), gray clock (queued), (6) Actor cell shows icon emoji + actor name + subtitle 'comp...places @ Pay per event', (7) DateTime shows date on top line, time on bottom line in gray, (8) Usage shows $X.XX format or '-' if no cost, (9) Build shows build_number in blue or '-', (10) Pagination controls: Items per page dropdown (10/20/50/100), 'Go to page:' input with Go button, Previous/Current/Next page buttons, (11) Auto-refresh every 5 seconds for real-time updates, (12) Click row to navigate to dataset (if succeeded), (13) Clean white background with minimal borders matching Apify aesthetic. Updated App.js to use RunsV3. Both backend and frontend restarted and compiled successfully. Ready for testing complete redesign with pagination and all new features."
 
   - task: "Redesigned Actors Page"
     implemented: true
