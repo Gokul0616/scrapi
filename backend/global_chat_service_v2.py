@@ -836,6 +836,19 @@ You: First get recent runs, then navigate to the latest one
             # Enhanced system prompt with function calling instructions and FULL context
             enhanced_prompt = f"""{self.system_prompt}
 
+**🚨 CRITICAL RESPONSE FORMAT:**
+When user asks to "run" or "scrape" something, you MUST respond with ONLY:
+FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{...}}}}
+
+DO NOT add explanatory text before function calls!
+DO NOT say "Starting..." or "I'll help you..." - ONLY output FUNCTION_CALL format!
+
+**Wrong ❌:**
+"🤖 Starting Google Maps Scraper for hotels..."
+
+**Correct ✅:**
+FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["hotels"], "location": "Karur, India", "max_results": 2}}}}
+
 **Available Functions:**
 {json.dumps(self.functions, indent=2)}
 
