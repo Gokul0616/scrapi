@@ -393,13 +393,42 @@ async def create_run(
     
     return run
 
-@router.get("/runs", response_model=List[Run])
-async def get_runs(current_user: dict = Depends(get_current_user), limit: int = 100):
-    """Get all runs for current user."""
+@router.get("/runs")
+async def get_runs(
+    current_user: dict = Depends(get_current_user), 
+    page: int = 1,
+    limit: int = 20,
+    search: Optional[str] = None,
+    status: Optional[str] = None,
+    sort_by: str = "created_at",
+    sort_order: str = "desc"
+):
+    """Get all runs for current user with pagination."""
+    # Build query
+    query = {"user_id": current_user['id']}
+    
+    # Add search filter (search by run ID)
+    if search:
+        query["id"] = {"$regex": search, "$options": "i"}
+    
+    # Add status filter
+    if status and status != "all":
+        query["status"] = status
+    
+    # Get total count
+    total_count = await db.runs.count_documents(query)
+    
+    # Calculate skip
+    skip = (page - 1) * limit
+    
+    # Set sort direction
+    sort_direction = -1 if sort_order == "desc" else 1
+    
+    # Get runs with pagination
     runs = await db.runs.find(
-        {"user_id": current_user['id']},
+        query,
         {"_id": 0}
-    ).sort("created_at", -1).limit(limit).to_list(limit)
+    ).sort(sort_by, sort_direction).skip(skip).limit(limit).to_list(limit)
     
     # Convert datetime strings
     for run in runs:
@@ -410,7 +439,13 @@ async def get_runs(current_user: dict = Depends(get_current_user), limit: int = 
         if isinstance(run.get('finished_at'), str):
             run['finished_at'] = datetime.fromisoformat(run['finished_at'])
     
-    return runs
+    return {
+        "runs": runs,
+        "total": total_count,
+        "page": page,
+        "limit": limit,
+        "total_pages": (total_count + limit - 1) // limit
+    }
 
 @router.get("/runs/{run_id}", response_model=Run)
 async def get_run(run_id: str, current_user: dict = Depends(get_current_user)):
