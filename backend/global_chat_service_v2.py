@@ -946,6 +946,15 @@ User: "yes" or "1" or "show 1" (after you listed runs)
 You: FUNCTION_CALL: {{"name": "view_run_details", "arguments": {{"run_id": "<run_id_from_previous_context>"}}}}
 (Don't just describe - NAVIGATE!)
 
+**CRITICAL FOR STOPPING/ABORTING RUNS:**
+User: "abort all" or "stop all runs" or "cancel all running runs"
+You: FUNCTION_CALL: {{"name": "list_recent_runs", "arguments": {{"limit": 50, "status_filter": "running"}}}}
+[After getting running runs with IDs]
+FUNCTION_CALL: {{"name": "stop_run", "arguments": {{"run_id": "<run_id_1>"}}}}
+FUNCTION_CALL: {{"name": "stop_run", "arguments": {{"run_id": "<run_id_2>"}}}}
+FUNCTION_CALL: {{"name": "stop_run", "arguments": {{"run_id": "<run_id_3>"}}}}
+(Call stop_run for EACH running run ID)
+
 
 **CRITICAL - REMEMBER CONVERSATION:**
 - ALWAYS refer to previous messages when user asks follow-up questions
