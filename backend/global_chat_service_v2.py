@@ -864,14 +864,20 @@ FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": 
             # Get response using emergentintegrations
             response = await llm_chat.send_message(user_msg)
             
+            # LOG: Check what the AI responded
+            logger.info(f"AI Response: {response[:200]}...")
+            
             # Check for MULTIPLE function calls (support multiple runs in one request)
             function_calls = []
             for match in re.finditer(r'FUNCTION_CALL:\s*({.*?})(?=\s*(?:FUNCTION_CALL|$))', response, re.DOTALL):
                 try:
                     function_call_json = json.loads(match.group(1))
                     function_calls.append(function_call_json)
+                    logger.info(f"Found function call: {function_call_json.get('name')}")
                 except:
                     pass
+            
+            logger.info(f"Total function calls found: {len(function_calls)}")
             
             # Track all created runs and actions
             created_run_ids = []
