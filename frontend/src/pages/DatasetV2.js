@@ -281,12 +281,10 @@ const DatasetV2 = () => {
     }));
   };
 
-  const filteredItems = items.filter(item => {
-    const searchLower = searchQuery.toLowerCase();
-    return Object.values(item.data).some(value =>
-      String(value).toLowerCase().includes(searchLower)
-    );
-  });
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+    setPage(1); // Reset to first page on search
+  };
 
   if (loading) {
     return (
