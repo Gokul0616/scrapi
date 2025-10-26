@@ -428,85 +428,85 @@ const DatasetV2 = () => {
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
-                  <tr className="bg-gray-50">
+                  <tr className="border-b border-gray-200 bg-white">
                     {visibleColumns.number && (
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">#</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">#</th>
                     )}
                     {visibleColumns.title && (
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
-                        Place name<br /><span className="text-gray-400 font-normal">title</span>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Place name
                       </th>
                     )}
                     {visibleColumns.totalScore && (
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
-                        Total<br/>Score<br /><span className="text-gray-400 font-normal">totalScore</span>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Total Score
                       </th>
                     )}
                     {visibleColumns.rating && (
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
-                        Star<br/>Rating<br /><span className="text-gray-400 font-normal">rating</span>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Rating
                       </th>
                     )}
                     {visibleColumns.reviewsCount && (
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
-                        Reviews<br/>Count<br /><span className="text-gray-400 font-normal">reviewsCount</span>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Reviews
                       </th>
                     )}
                     {visibleColumns.address && (
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
-                        Street<br /><span className="text-gray-400 font-normal">street</span>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Address
                       </th>
                     )}
                     {visibleColumns.city && (
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
-                        City<br /><span className="text-gray-400 font-normal">city</span>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        City
                       </th>
                     )}
                     {visibleColumns.state && (
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
-                        State<br /><span className="text-gray-400 font-normal">state</span>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        State
                       </th>
                     )}
                     {visibleColumns.countryCode && (
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
-                        Country<br/>Code<br /><span className="text-gray-400 font-normal">countryCode</span>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Country
                       </th>
                     )}
                     {visibleColumns.website && (
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
-                        Website<br /><span className="text-gray-400 font-normal">website</span>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Website
                       </th>
                     )}
                     {visibleColumns.phone && (
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
-                        Phone<br /><span className="text-gray-400 font-normal">phone</span>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Phone
                       </th>
                     )}
                     {visibleColumns.category && (
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
-                        Category<br/>Name<br /><span className="text-gray-400 font-normal">categoryName</span>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Category
                       </th>
                     )}
                     {visibleColumns.url && (
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
-                        URL<br /><span className="text-gray-400 font-normal">url</span>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Map URL
                       </th>
                     )}
                     {visibleColumns.socialMedia && (
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
-                        Social Media<br /><span className="text-gray-400 font-normal">socialMedia</span>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                        Social Media
                       </th>
                     )}
                     {visibleColumns.actions && (
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">Actions</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">Actions</th>
                     )}
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="bg-white">
                   {items.map((item, index) => (
-                    <tr key={item.id} className="hover:bg-gray-50 border-b border-gray-100">
+                    <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                       {visibleColumns.number && (
-                        <td className="px-4 py-3 text-sm text-gray-900">{(page - 1) * limit + index + 1}</td>
+                        <td className="px-6 py-4 text-sm text-gray-900">{(page - 1) * limit + index + 1}</td>
                       )}
                       {visibleColumns.title && (
                         <td className="px-4 py-3 text-sm">
