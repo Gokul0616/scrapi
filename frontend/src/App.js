@@ -21,6 +21,13 @@ import Home from './pages/Home';
 import Store from './pages/Store';
 import GlobalChat from './components/GlobalChat';
 
+// Component to handle root redirect based on last path
+const RootRedirect = () => {
+  const { lastPath } = useAuth();
+  const redirectTo = lastPath || '/home';
+  return <Navigate to={redirectTo} replace />;
+};
+
 // Component to track route changes and update last path
 const RouteTracker = () => {
   const location = useLocation();
@@ -28,7 +35,7 @@ const RouteTracker = () => {
   
   useEffect(() => {
     // Only track authenticated routes (not login/register)
-    if (user && location.pathname !== '/login' && location.pathname !== '/register') {
+    if (user && location.pathname !== '/login' && location.pathname !== '/register' && location.pathname !== '/') {
       updateLastPath(location.pathname);
     }
   }, [location.pathname, user, updateLastPath]);
