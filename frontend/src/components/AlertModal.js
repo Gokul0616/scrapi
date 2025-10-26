@@ -66,31 +66,31 @@ const AlertModal = ({
 }) => {
   if (!show) return null;
 
-  // Configuration for different alert types
+  // Configuration for different alert types - matched with app theme
   const typeConfig = {
     success: {
       icon: CheckCircle2,
-      iconBgColor: 'bg-green-100',
+      iconBgColor: 'bg-green-50',
       iconColor: 'text-green-600',
-      confirmBgColor: 'bg-green-600 hover:bg-green-700'
+      confirmBgColor: 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800'
     },
     error: {
       icon: XCircle,
-      iconBgColor: 'bg-red-100',
+      iconBgColor: 'bg-red-50',
       iconColor: 'text-red-600',
-      confirmBgColor: 'bg-red-600 hover:bg-red-700'
+      confirmBgColor: 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800'
     },
     warning: {
       icon: AlertTriangle,
-      iconBgColor: 'bg-orange-100',
+      iconBgColor: 'bg-orange-50',
       iconColor: 'text-orange-600',
-      confirmBgColor: 'bg-orange-600 hover:bg-orange-700'
+      confirmBgColor: 'bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800'
     },
     info: {
       icon: Info,
-      iconBgColor: 'bg-blue-100',
-      iconColor: 'text-blue-600',
-      confirmBgColor: 'bg-blue-600 hover:bg-blue-700'
+      iconBgColor: 'bg-gray-50',
+      iconColor: 'text-gray-700',
+      confirmBgColor: 'bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-600 hover:to-gray-800'
     }
   };
 
