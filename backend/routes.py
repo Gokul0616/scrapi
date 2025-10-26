@@ -208,6 +208,58 @@ async def delete_actor(actor_id: str, current_user: dict = Depends(get_current_u
         raise HTTPException(status_code=404, detail="Actor not found")
     return {"message": "Actor deleted successfully"}
 
+@router.get("/actors-used")
+async def get_actors_used(current_user: dict = Depends(get_current_user)):
+    """Get actors used by the current user with run statistics."""
+    try:
+        # Aggregation pipeline to get actors with run statistics
+        pipeline = [
+            # Match runs for this user
+            {"$match": {"user_id": current_user['id']}},
+            # Group by actor_id to get statistics
+            {
+                "$group": {
+                    "_id": "$actor_id",
+                    "total_runs": {"$sum": 1},
+                    "last_run_started": {"$max": "$started_at"},
+                    "last_run_status": {"$last": "$status"},
+                    "last_run_duration": {"$last": "$duration_seconds"},
+                    "last_run_id": {"$last": "$id"}
+                }
+            },
+            # Sort by last run (most recent first)
+            {"$sort": {"last_run_started": -1}}
+        ]
+        
+        run_stats = await db.runs.aggregate(pipeline).to_list(1000)
+        
+        # Get actor details for each actor_id
+        result = []
+        for stat in run_stats:
+            actor = await db.actors.find_one({"id": stat["_id"]}, {"_id": 0})
+            if actor:
+                # Convert datetime strings if needed
+                if isinstance(actor.get('created_at'), str):
+                    actor['created_at'] = datetime.fromisoformat(actor['created_at'])
+                if isinstance(actor.get('updated_at'), str):
+                    actor['updated_at'] = datetime.fromisoformat(actor['updated_at'])
+                
+                # Add run statistics
+                actor_with_stats = {
+                    **actor,
+                    "total_runs": stat["total_runs"],
+                    "last_run_started": stat["last_run_started"],
+                    "last_run_status": stat["last_run_status"],
+                    "last_run_duration": stat["last_run_duration"],
+                    "last_run_id": stat["last_run_id"]
+                }
+                result.append(actor_with_stats)
+        
+        return result
+    except Exception as e:
+        logger.error(f"Error getting actors used: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # ============= Run Routes =============
 async def execute_scraping_job(run_id: str, actor_id: str, user_id: str, input_data: dict):
     """Background task to execute scraping."""
