@@ -397,7 +397,8 @@ const GlobalChat = () => {
           onMouseDown={handleDragStart}
           onTouchStart={handleDragStart}
           onClick={(e) => {
-            if (!isDragging) {
+            // Only open chat if user didn't drag (just clicked)
+            if (!dragMoved) {
               toggleChat();
             }
           }}
