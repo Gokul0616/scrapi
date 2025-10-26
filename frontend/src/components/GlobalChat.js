@@ -372,9 +372,32 @@ const GlobalChat = () => {
       {/* Floating Button */}
       {!isOpen && (
         <button
-          onClick={toggleChat}
-          className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-600 hover:to-gray-800 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center z-50 group"
-          title="Chat Assistant"
+          ref={buttonRef}
+          onMouseDown={handleDragStart}
+          onTouchStart={handleDragStart}
+          onClick={(e) => {
+            if (!isDragging) {
+              toggleChat();
+            }
+          }}
+          style={
+            isDragging
+              ? {
+                  position: 'fixed',
+                  left: `${currentPos.x}px`,
+                  top: `${currentPos.y}px`,
+                  cursor: 'grabbing',
+                  transition: 'none'
+                }
+              : {
+                  position: 'fixed',
+                  ...getPositionStyles(),
+                  cursor: 'grab',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1)'
+                }
+          }
+          className="w-14 h-14 bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-600 hover:to-gray-800 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center z-50 group active:scale-95"
+          title="Chat Assistant (Drag to move)"
         >
           <MessageCircle className="w-6 h-6" />
           <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
@@ -384,7 +407,11 @@ const GlobalChat = () => {
       {/* Chat Window */}
       {isOpen && (
         <div 
-          className={`fixed bottom-6 right-6 w-96 bg-white rounded-lg shadow-2xl border border-gray-200 flex flex-col z-50 transition-all duration-300 ${
+          style={{
+            position: 'fixed',
+            ...getPositionStyles()
+          }}
+          className={`w-96 bg-white rounded-lg shadow-2xl border border-gray-200 flex flex-col z-50 transition-all duration-300 ${
             isMinimized ? 'h-14' : 'h-[600px]'
           }`}
         >
