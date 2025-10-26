@@ -730,13 +730,14 @@ const DatasetV2 = () => {
                       type="number"
                       min="1"
                       max={totalPages}
-                      value={''}
-                      onChange={(e) => {}}
+                      value={goToPageInput}
+                      onChange={(e) => setGoToPageInput(e.target.value)}
                       onKeyPress={(e) => {
                         if (e.key === 'Enter') {
-                          const pageNum = parseInt(e.target.value);
+                          const pageNum = parseInt(goToPageInput);
                           if (pageNum >= 1 && pageNum <= totalPages) {
                             setPage(pageNum);
+                            setGoToPageInput('');
                           }
                         }
                       }}
@@ -745,12 +746,11 @@ const DatasetV2 = () => {
                     />
                     <Button
                       size="sm"
-                      onClick={(e) => {
-                        const input = e.target.closest('div').querySelector('input[type="number"]');
-                        const pageNum = parseInt(input.value);
+                      onClick={() => {
+                        const pageNum = parseInt(goToPageInput);
                         if (pageNum >= 1 && pageNum <= totalPages) {
                           setPage(pageNum);
-                          input.value = '';
+                          setGoToPageInput('');
                         }
                       }}
                       className="h-8 px-3 bg-white border border-gray-300 text-gray-700 text-sm hover:bg-gray-50"
