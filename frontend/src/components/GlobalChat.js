@@ -21,6 +21,16 @@ const GlobalChat = () => {
   const [actionFeedback, setActionFeedback] = useState(null);
   const messagesEndRef = useRef(null);
 
+  // Draggable state
+  const [position, setPosition] = useState(() => {
+    const saved = localStorage.getItem('chatPosition');
+    return saved ? JSON.parse(saved) : { corner: 'bottom-right' };
+  });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [currentPos, setCurrentPos] = useState({ x: 0, y: 0 });
+  const buttonRef = useRef(null);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
