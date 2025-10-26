@@ -121,16 +121,21 @@ const AlertModal = ({
 
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[100] backdrop-blur-sm"
       onClick={handleBackdropClick}
     >
       <div 
-        className={`bg-white rounded-lg shadow-xl p-6 ${modalSizeClass} w-full mx-4 animate-in fade-in zoom-in duration-200`}
+        className={`bg-white rounded-xl shadow-2xl p-6 ${modalSizeClass} w-full mx-4 animate-in fade-in zoom-in duration-200 border border-gray-200`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start gap-4">
           {/* Icon */}
-          <div className={`flex-shrink-0 w-12 h-12 rounded-full ${config.iconBgColor} flex items-center justify-center`}>
+          <div className={`flex-shrink-0 w-12 h-12 rounded-full ${config.iconBgColor} flex items-center justify-center ring-2 ring-offset-2 ${
+            type === 'success' ? 'ring-green-200' :
+            type === 'error' ? 'ring-red-200' :
+            type === 'warning' ? 'ring-orange-200' :
+            'ring-gray-200'
+          }`}>
             <IconComponent className={`w-6 h-6 ${config.iconColor}`} />
           </div>
 
@@ -138,25 +143,27 @@ const AlertModal = ({
           <div className="flex-1">
             {/* Title */}
             {title && (
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="text-lg font-bold text-gray-900 mb-2">
                 {title}
               </h3>
             )}
 
             {/* Message */}
             {message && (
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-gray-700 mb-4 leading-relaxed">
                 {message}
               </p>
             )}
 
             {/* Details Section */}
             {details.length > 0 && (
-              <div className="bg-gray-50 rounded p-3 mb-4 space-y-2">
+              <div className="bg-gray-50 rounded-lg p-4 mb-4 space-y-3 border border-gray-200">
                 {details.map((detail, index) => (
                   <div key={index}>
-                    <p className="text-xs text-gray-500 mb-1">{detail.label}</p>
-                    <p className="text-sm font-mono text-gray-900 break-all">
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+                      {detail.label}
+                    </p>
+                    <p className="text-sm font-mono text-gray-900 break-all bg-white px-2 py-1 rounded border border-gray-200">
                       {detail.value}
                     </p>
                   </div>
@@ -165,13 +172,13 @@ const AlertModal = ({
             )}
 
             {/* Action Buttons */}
-            <div className="flex items-center gap-3 justify-end">
+            <div className="flex items-center gap-3 justify-end mt-6">
               {showCancel && (
                 <Button
                   onClick={onClose}
                   variant="outline"
                   size="sm"
-                  className="px-4 py-2"
+                  className="px-5 py-2 border-gray-300 hover:bg-gray-50 text-gray-700 font-medium"
                 >
                   {cancelText}
                 </Button>
@@ -179,7 +186,7 @@ const AlertModal = ({
               <Button
                 onClick={handleConfirm}
                 size="sm"
-                className={`px-4 py-2 ${confirmButtonClass || config.confirmBgColor} text-white`}
+                className={`px-5 py-2 ${confirmButtonClass || config.confirmBgColor} text-white font-medium shadow-md hover:shadow-lg transition-all`}
               >
                 {confirmText}
               </Button>
@@ -190,7 +197,7 @@ const AlertModal = ({
           {!showCancel && (
             <button
               onClick={onClose}
-              className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+              className="flex-shrink-0 text-gray-400 hover:text-gray-700 transition-colors hover:bg-gray-100 rounded-full p-1"
             >
               <X className="w-5 h-5" />
             </button>
