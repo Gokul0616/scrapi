@@ -69,7 +69,7 @@ When a user gives ANY command, you AUTOMATICALLY execute it:
 
 **Key Functions:**
 1. **fill_and_start_scraper** - Automatically fill form + start run (use THIS for "run X for Y" commands)
-2. **navigate_to_page** - Go to dashboard, actors, runs, datasets, leads, proxies
+2. **navigate_to_page** - Go to home, actors, runs, datasets, leads, proxies, store, marketplace
 3. **view_run_details** - Open specific run's results
 4. **open_actor_detail** - Open actor configuration page
 5. **export_dataset** - Download data
