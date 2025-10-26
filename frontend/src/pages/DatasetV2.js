@@ -6,7 +6,7 @@ import remarkGfm from 'remark-gfm';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
-import { Search, Download, ArrowLeft, MessageSquare, X, Send, Mail, Phone, CheckCircle2, FileText, MapPin, ExternalLink } from 'lucide-react';
+import { Search, Download, ArrowLeft, MessageSquare, X, Send, Mail, Phone, CheckCircle2, FileText, MapPin, ExternalLink, Settings, Eye, Table as TableIcon, MoreHorizontal, Star } from 'lucide-react';
 import { toast } from '../hooks/use-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -23,6 +23,28 @@ const DatasetV2 = () => {
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [showLinksModal, setShowLinksModal] = useState(false);
+  const [selectedLinksItem, setSelectedLinksItem] = useState(null);
+  const [visibleColumns, setVisibleColumns] = useState({
+    number: true,
+    title: true,
+    totalScore: true,
+    rating: true,
+    reviewsCount: true,
+    address: true,
+    city: true,
+    state: true,
+    countryCode: true,
+    website: true,
+    phone: true,
+    email: true,
+    category: true,
+    socialMedia: true,
+    url: true,
+    actions: true
+  });
+  const [showColumnSettings, setShowColumnSettings] = useState(false);
 
   useEffect(() => {
     fetchDataset();
