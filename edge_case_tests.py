@@ -10,7 +10,7 @@ import time
 import sys
 from datetime import datetime
 
-BACKEND_URL = "https://multi-query-scraper.preview.emergentagent.com/api"
+BACKEND_URL = "https://chat-routing-fix.preview.emergentagent.com/api"
 
 class EdgeCaseTester:
     def __init__(self):
