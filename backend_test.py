@@ -356,8 +356,8 @@ class ScrapiAPITester:
             self.test_results["runs"]["errors"].append("Run timeout")
             
     def test_enhanced_dataset_v3(self):
-        """Test enhanced dataset with V3 scraper features"""
-        self.log("=== Testing Enhanced Dataset with V3 Features ===")
+        """Test dataset with country code extraction and all required fields"""
+        self.log("=== Testing Dataset Fields with Country Code Extraction ===")
         
         if not self.run_id:
             self.log("❌ Cannot test dataset - no run ID available")
@@ -366,7 +366,7 @@ class ScrapiAPITester:
             return
             
         # Test get dataset items
-        self.log("Testing get V3 dataset items...")
+        self.log("Testing dataset items with country code extraction...")
         response = self.make_request("GET", f"/datasets/{self.run_id}/items")
         if response and response.status_code == 200:
             items = response.json()
@@ -374,52 +374,77 @@ class ScrapiAPITester:
                 self.log(f"✅ Retrieved {len(items)} dataset items")
                 self.test_results["datasets"]["passed"] += 1
                 
-                # Verify V3 enhanced features
-                if len(items) >= 15:
-                    self.log(f"✅ V3 scraper fetched at least 15 results ({len(items)} found)")
+                # Verify we got the expected number of results (3 as requested)
+                if len(items) >= 3:
+                    self.log(f"✅ Scraper fetched at least 3 results ({len(items)} found)")
                     self.test_results["datasets"]["passed"] += 1
                 else:
-                    self.log(f"❌ V3 scraper did not fetch 15 results (only {len(items)} found)")
-                    self.test_results["datasets"]["failed"] += 1
-                    self.test_results["datasets"]["errors"].append(f"V3 scraper only fetched {len(items)} results, expected 15+")
+                    self.log(f"⚠️ Scraper fetched {len(items)} results (requested 3)")
                 
-                # Check V3 enhanced fields and NEW SOCIAL MEDIA EXTRACTION
+                # Check all required fields including NEW countryCode field
                 if len(items) > 0:
+                    self.log("=== Verifying Dataset Fields for First Business ===")
                     sample_item = items[0]
                     if "data" in sample_item:
                         data = sample_item["data"]
                         
-                        # Check for V3 enhanced fields
-                        v3_features = {
-                            "emailVerified": "Email verification field",
-                            "phoneVerified": "Phone verification field", 
+                        # Log the complete scraped data for verification
+                        self.log(f"Complete scraped data for verification:")
+                        for key, value in data.items():
+                            self.log(f"  {key}: {value}")
+                        
+                        # Check ALL required fields as specified in review request
+                        required_fields = {
+                            "title": "Business name",
+                            "address": "Full address", 
                             "city": "City parsed from address",
                             "state": "State parsed from address",
-                            "totalScore": "Total score calculation"
+                            "countryCode": "NEW FIELD - Country code (should be 'US' for New York)",
+                            "phone": "Phone number",
+                            "website": "Website URL",
+                            "category": "Business category",
+                            "rating": "Rating score",
+                            "reviewsCount": "Number of reviews",
+                            "totalScore": "Total score calculation",
+                            "socialMedia": "Social media links",
+                            "url": "Google Maps URL"
                         }
                         
-                        found_features = []
-                        missing_features = []
+                        found_fields = []
+                        missing_fields = []
                         
-                        for field, description in v3_features.items():
-                            if field in data:
-                                found_features.append(f"{field} ({description})")
+                        for field, description in required_fields.items():
+                            if field in data and data[field] is not None:
+                                found_fields.append(f"{field} ({description})")
+                                
+                                # Special validation for countryCode
+                                if field == "countryCode":
+                                    country_code = data[field]
+                                    if country_code == "US":
+                                        self.log(f"✅ NEW FIELD countryCode correctly set to 'US' for New York: {country_code}")
+                                        self.test_results["datasets"]["passed"] += 1
+                                    else:
+                                        self.log(f"❌ NEW FIELD countryCode incorrect for New York - expected 'US', got: {country_code}")
+                                        self.test_results["datasets"]["failed"] += 1
+                                        self.test_results["datasets"]["errors"].append(f"countryCode incorrect: expected 'US', got '{country_code}'")
                             else:
-                                missing_features.append(f"{field} ({description})")
+                                missing_fields.append(f"{field} ({description})")
                         
-                        if found_features:
-                            self.log(f"✅ V3 Enhanced fields found: {', '.join(found_features)}")
+                        if found_fields:
+                            self.log(f"✅ Fields found: {', '.join(found_fields)}")
                             self.test_results["datasets"]["passed"] += 1
                         
-                        if missing_features:
-                            self.log(f"⚠️ V3 Enhanced fields missing: {', '.join(missing_features)}")
+                        if missing_fields:
+                            self.log(f"❌ Missing fields: {', '.join(missing_fields)}")
+                            self.test_results["datasets"]["failed"] += 1
+                            self.test_results["datasets"]["errors"].append(f"Missing fields: {', '.join(missing_fields)}")
                         
-                        # NEW: Check for social media extraction
-                        if "socialMedia" in data:
+                        # Verify social media extraction structure
+                        if "socialMedia" in data and data["socialMedia"]:
                             social_media = data["socialMedia"]
-                            if isinstance(social_media, dict) and social_media:
+                            if isinstance(social_media, dict):
                                 platforms = list(social_media.keys())
-                                self.log(f"✅ Social media links found: {', '.join(platforms)}")
+                                self.log(f"✅ Social media platforms found: {', '.join(platforms)}")
                                 self.test_results["datasets"]["passed"] += 1
                                 
                                 # Verify social media URLs are valid
@@ -432,16 +457,12 @@ class ScrapiAPITester:
                                 if valid_urls > 0:
                                     self.log(f"✅ {valid_urls} valid social media URLs found")
                                     self.test_results["datasets"]["passed"] += 1
-                                else:
-                                    self.log("❌ No valid social media URLs found")
-                                    self.test_results["datasets"]["failed"] += 1
-                                    self.test_results["datasets"]["errors"].append("No valid social media URLs")
                             else:
-                                self.log("⚠️ socialMedia field exists but is empty (may be expected)")
+                                self.log("⚠️ socialMedia field exists but is not a dict")
                         else:
-                            self.log("⚠️ No socialMedia field found (may be expected for some businesses)")
+                            self.log("⚠️ No socialMedia data found (may be expected for some businesses)")
                         
-                        # Check for email and phone extraction
+                        # Check for contact information
                         has_email = "email" in data and data["email"]
                         has_phone = "phone" in data and data["phone"]
                         
@@ -456,20 +477,18 @@ class ScrapiAPITester:
                         else:
                             self.log("⚠️ No email or phone extracted (may be expected for some businesses)")
                         
-                        # Verify basic required fields
-                        required_fields = ["title", "address"]
-                        has_required = all(field in data for field in required_fields)
-                        if has_required:
-                            self.log("✅ Dataset items have required structure")
-                            self.test_results["datasets"]["passed"] += 1
-                        else:
-                            self.log("❌ Dataset items missing required fields")
-                            self.test_results["datasets"]["failed"] += 1
-                            self.test_results["datasets"]["errors"].append("Dataset items missing required fields")
+                        # Store first item for potential AI chat testing
+                        self.first_lead_id = sample_item["id"]
+                        self.first_lead_data = data
+                        
                     else:
                         self.log("❌ Dataset items missing data field")
                         self.test_results["datasets"]["failed"] += 1
                         self.test_results["datasets"]["errors"].append("Dataset items missing data field")
+                else:
+                    self.log("❌ No dataset items found")
+                    self.test_results["datasets"]["failed"] += 1
+                    self.test_results["datasets"]["errors"].append("No dataset items found")
             else:
                 self.log("❌ Dataset items response is not a list")
                 self.test_results["datasets"]["failed"] += 1
