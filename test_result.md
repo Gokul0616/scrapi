@@ -658,6 +658,18 @@ agent_communication:
         - working: "NA"
           agent: "main"
           comment: "🔧 SMART POSITIONING ENHANCEMENT: Added intelligent context-menu style positioning like OS right-click menus. Changes: (1) Calculates optimal position upfront before rendering (320px width, 400px height estimates), (2) SMART VERTICAL PLACEMENT: checks if space below button - if not enough space (popup would go off bottom), opens ABOVE button instead (like context menus), if still goes off top, positions at top of viewport with 10px margin, (3) SMART HORIZONTAL PLACEMENT: checks if space to right - if not enough space, aligns popup to right edge of button, if still goes off left, positions at left of viewport with 10px margin, (4) Removed reactive useEffect - now calculates perfect position immediately on click, (5) Works exactly like OS context menus - automatically flips direction based on available space. Frontend restarted successfully. Ready for testing smart positioning in all viewport positions (bottom, top, corners)."
+
+  - task: "Task Column Character Limit Increase (30 → 50)"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/RunsV3.js"
+    stuck_count: 0
+    priority: "low"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "📏 TASK COLUMN CHARACTER LIMIT INCREASED: Updated formatTaskWithWrapping() function in RunsV3.js to increase character limit from 30 to 50 characters per row. Changes: (1) Modified maxLength constant from 30 to 50 (line 144), (2) Updated comment to reflect new 50-character limit, (3) Function still intelligently breaks at spaces when possible for better readability, (4) Allows more task description content (search terms + location + max results) to display on single lines before wrapping. Frontend restarted successfully. Task column now displays up to 50 characters per row instead of 30."
         - working: "NA"
           agent: "main"
           comment: "🔧 SMART POSITIONING ENHANCEMENT: Added intelligent context-menu style positioning like OS right-click menus. Changes: (1) Calculates optimal position upfront before rendering (320px width, 400px height estimates), (2) SMART VERTICAL PLACEMENT: checks if space below button - if not enough space (popup would go off bottom), opens ABOVE button instead (like context menus), if still goes off top, positions at top of viewport with 10px margin, (3) SMART HORIZONTAL PLACEMENT: checks if space to right - if not enough space, aligns popup to right edge of button, if still goes off left, positions at left of viewport with 10px margin, (4) Removed reactive useEffect - now calculates perfect position immediately on click, (5) Works exactly like OS context menus - automatically flips direction based on available space. Frontend restarted successfully. Ready for testing smart positioning in all viewport positions (bottom, top, corners)."
