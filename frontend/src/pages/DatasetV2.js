@@ -249,10 +249,40 @@ const DatasetV2 = () => {
   const openLinksModal = (item, event) => {
     event.stopPropagation();
     const buttonRect = event.currentTarget.getBoundingClientRect();
-    setLinksModalPosition({
-      x: buttonRect.left,
-      y: buttonRect.bottom + 5 // 5px below the button
-    });
+    
+    // Estimate popup dimensions
+    const popupWidth = 320;
+    const popupHeight = 400; // max height
+    
+    // Get viewport dimensions
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    
+    // Calculate position with smart placement
+    let x = buttonRect.left;
+    let y = buttonRect.bottom + 5;
+    
+    // Check if popup goes off bottom - if yes, open above button
+    if (y + popupHeight > viewportHeight - 10) {
+      y = buttonRect.top - popupHeight - 5; // Open above button
+      
+      // If still goes off top, position at top of viewport
+      if (y < 10) {
+        y = 10;
+      }
+    }
+    
+    // Check if popup goes off right edge - if yes, align to right
+    if (x + popupWidth > viewportWidth - 10) {
+      x = buttonRect.right - popupWidth; // Align to right edge of button
+      
+      // If still goes off left, position at left of viewport
+      if (x < 10) {
+        x = 10;
+      }
+    }
+    
+    setLinksModalPosition({ x, y });
     setSelectedLinksItem(item);
     setShowLinksModal(true);
   };
