@@ -99,6 +99,13 @@ const RunsV3 = () => {
     return `$${cost.toFixed(2)}`;
   };
 
+  const formatTaskDescription = (run) => {
+    const searchTerms = run.input_data?.search_terms?.join(', ') || 'N/A';
+    const location = run.input_data?.location || 'N/A';
+    const maxResults = run.input_data?.max_results || 'N/A';
+    return `${searchTerms} | ${location} | Max: ${maxResults}`;
+  };
+
   const handleSort = (field) => {
     if (sortBy === field) {
       setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
