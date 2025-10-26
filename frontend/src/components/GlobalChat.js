@@ -126,18 +126,26 @@ const GlobalChat = () => {
     
     setIsDragging(false);
     
-    // Calculate center of button
-    const buttonSize = 56; // 14 * 4 = 56px (w-14 h-14)
-    const centerX = currentPos.x + buttonSize / 2;
-    const centerY = currentPos.y + buttonSize / 2;
+    // Only update position if user actually dragged (moved beyond threshold)
+    if (dragMoved) {
+      // Calculate center of button
+      const buttonSize = 56; // 14 * 4 = 56px (w-14 h-14)
+      const centerX = currentPos.x + buttonSize / 2;
+      const centerY = currentPos.y + buttonSize / 2;
+      
+      // Find nearest corner
+      const nearestCorner = getNearestCorner(centerX, centerY);
+      
+      // Update position
+      const newPosition = { corner: nearestCorner };
+      setPosition(newPosition);
+      localStorage.setItem('chatPosition', JSON.stringify(newPosition));
+    }
     
-    // Find nearest corner
-    const nearestCorner = getNearestCorner(centerX, centerY);
-    
-    // Update position
-    const newPosition = { corner: nearestCorner };
-    setPosition(newPosition);
-    localStorage.setItem('chatPosition', JSON.stringify(newPosition));
+    // Reset drag moved flag after a short delay to allow onClick to check it
+    setTimeout(() => {
+      setDragMoved(false);
+    }, 50);
   };
 
   // Add/remove event listeners for dragging
