@@ -621,6 +621,29 @@ const GlobalChat = () => {
           )}
         </div>
       )}
+
+      {/* Alert Modal (for info/error messages) */}
+      <AlertModal
+        show={alertModal.show}
+        onClose={() => setAlertModal({ ...alertModal, show: false })}
+        type={alertModal.type}
+        title={alertModal.title}
+        message={alertModal.message}
+        confirmText="OK"
+      />
+
+      {/* Confirmation Modal (for confirmations) */}
+      <AlertModal
+        show={confirmModal.show}
+        onClose={() => setConfirmModal({ ...confirmModal, show: false })}
+        onConfirm={confirmModal.onConfirm}
+        type={confirmModal.type}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        showCancel={true}
+        confirmText="Confirm"
+        cancelText="Cancel"
+      />
     </>
   );
 };
