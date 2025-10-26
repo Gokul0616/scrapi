@@ -395,6 +395,11 @@ const DatasetV2 = () => {
                         Total<br/>Score<br /><span className="text-gray-400 font-normal">totalScore</span>
                       </th>
                     )}
+                    {visibleColumns.rating && (
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
+                        Star<br/>Rating<br /><span className="text-gray-400 font-normal">rating</span>
+                      </th>
+                    )}
                     {visibleColumns.reviewsCount && (
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 border-b">
                         Reviews<br/>Count<br /><span className="text-gray-400 font-normal">reviewsCount</span>
