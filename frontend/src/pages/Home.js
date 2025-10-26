@@ -35,9 +35,9 @@ function Home() {
       setSuggestedActors(actors.slice(0, 3));
 
       // Fetch recent runs
-      const runsRes = await fetch(`${BACKEND_URL}/api/runs`, { headers });
-      const runs = await runsRes.json();
-      setRecentRuns(runs.slice(0, 5)); // Last 5 runs
+      const runsRes = await fetch(`${BACKEND_URL}/api/runs?limit=5&sort_by=created_at&sort_order=desc`, { headers });
+      const runsData = await runsRes.json();
+      setRecentRuns(runsData.runs || []); // Get runs array from response
 
       setLoading(false);
     } catch (error) {
