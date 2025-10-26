@@ -359,7 +359,7 @@ const DatasetV2 = () => {
           <div className="flex items-center space-x-8 text-sm">
             <div>
               <span className="text-gray-600">RESULTS</span>
-              <span className="ml-2 text-blue-600 font-semibold">{filteredItems.length}</span>
+              <span className="ml-2 text-blue-600 font-semibold">{totalCount}</span>
             </div>
             <div>
               <span className="text-gray-600">REQUESTS</span>
