@@ -36,6 +36,10 @@ const RunsV3 = () => {
   const [abortingRuns, setAbortingRuns] = useState(new Set());
   const [showAbortModal, setShowAbortModal] = useState(false);
   const [abortModalData, setAbortModalData] = useState(null);
+  
+  // Alert modal states
+  const [alertModal, setAlertModal] = useState({ show: false, type: 'info', title: '', message: '', details: [] });
+  const [confirmModal, setConfirmModal] = useState({ show: false, type: 'warning', title: '', message: '', onConfirm: null, details: [] });
 
   useEffect(() => {
     fetchRuns();
