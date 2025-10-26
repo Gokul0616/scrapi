@@ -9,7 +9,7 @@ import { Eye, EyeOff } from 'lucide-react';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, lastPath } = useAuth();
   const [formData, setFormData] = useState({ username: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -22,7 +22,8 @@ const Login = () => {
     
     if (result.success) {
       toast({ title: 'Login successful!', variant: 'default' });
-      navigate('/actors');
+      // Redirect to last visited path or default to /home
+      navigate(lastPath || '/home');
     } else {
       toast({ title: 'Login failed', description: result.error, variant: 'destructive' });
     }
