@@ -767,7 +767,7 @@ const DatasetV2 = () => {
                       disabled={page === 1}
                       className="h-8 w-8 p-0 text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
                     >
-                      ←
+                      <ChevronLeft className="w-4 h-4" />
                     </Button>
                     <div className="px-3 py-1 text-sm font-medium text-gray-700">
                       {page}
@@ -779,7 +779,7 @@ const DatasetV2 = () => {
                       disabled={page === totalPages}
                       className="h-8 w-8 p-0 text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
                     >
-                      →
+                      <ChevronRight className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>
