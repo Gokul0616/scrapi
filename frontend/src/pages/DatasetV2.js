@@ -113,6 +113,11 @@ const DatasetV2 = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
+      // Validate response data
+      if (!response || !response.data || !response.data.response) {
+        throw new Error('Invalid response from server');
+      }
+
       setChatMessages(prev => [...prev, {
         role: 'assistant',
         content: response.data.response,
@@ -120,9 +125,10 @@ const DatasetV2 = () => {
       }]);
     } catch (error) {
       console.error('Failed to send message:', error);
+      const errorMessage = error.response?.data?.detail || error.message || 'Failed to get AI response';
       toast({
         title: 'Error',
-        description: 'Failed to get AI response',
+        description: errorMessage,
         variant: 'destructive'
       });
     } finally {
