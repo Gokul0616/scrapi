@@ -884,6 +884,227 @@ class ScrapiAPITester:
         
         self.log("Data isolation testing completed")
 
+    def test_actors_used_endpoint(self):
+        """Test the new /api/actors-used endpoint as requested in review"""
+        self.log("=== Testing /api/actors-used Endpoint ===")
+        
+        # Add actors_used to test results if not exists
+        if "actors_used" not in self.test_results:
+            self.test_results["actors_used"] = {"passed": 0, "failed": 0, "errors": []}
+        
+        # First, ensure we have at least one run to test with
+        if not self.run_id:
+            self.log("No existing run found, creating test run with Google Maps Scraper V2...")
+            
+            # Find Google Maps Scraper V2 actor
+            response = self.make_request("GET", "/actors")
+            if response and response.status_code == 200:
+                actors = response.json()
+                google_maps_actor = None
+                for actor in actors:
+                    if "Google Maps Scraper" in actor.get("name", ""):
+                        google_maps_actor = actor
+                        self.actor_id = actor["id"]
+                        break
+                
+                if not google_maps_actor:
+                    self.log("❌ Cannot test actors-used - Google Maps Scraper not found")
+                    self.test_results["actors_used"]["failed"] += 1
+                    self.test_results["actors_used"]["errors"].append("Google Maps Scraper not found")
+                    return
+                
+                # Create a test run
+                run_data = {
+                    "actor_id": self.actor_id,
+                    "input_data": {
+                        "search_terms": ["coffee shops"],
+                        "location": "San Francisco, CA",
+                        "max_results": 5,
+                        "extract_reviews": False,
+                        "extract_images": False
+                    }
+                }
+                
+                response = self.make_request("POST", "/runs", run_data)
+                if response and response.status_code == 200:
+                    run = response.json()
+                    self.run_id = run["id"]
+                    self.log(f"✅ Test run created: {self.run_id}")
+                    
+                    # Wait for run to complete or at least start
+                    import time
+                    time.sleep(10)  # Give it some time to start
+                else:
+                    self.log("❌ Failed to create test run")
+                    self.test_results["actors_used"]["failed"] += 1
+                    self.test_results["actors_used"]["errors"].append("Failed to create test run")
+                    return
+            else:
+                self.log("❌ Failed to get actors list")
+                self.test_results["actors_used"]["failed"] += 1
+                self.test_results["actors_used"]["errors"].append("Failed to get actors list")
+                return
+        
+        # Test the /api/actors-used endpoint
+        self.log("Testing GET /api/actors-used endpoint...")
+        response = self.make_request("GET", "/actors-used")
+        
+        if response and response.status_code == 200:
+            actors_used = response.json()
+            
+            if isinstance(actors_used, list):
+                self.log(f"✅ actors-used endpoint working - returned {len(actors_used)} actors")
+                self.test_results["actors_used"]["passed"] += 1
+                
+                if len(actors_used) > 0:
+                    # Test the structure and content of the response
+                    sample_actor = actors_used[0]
+                    
+                    # Check required actor fields
+                    required_actor_fields = ["id", "name", "icon", "description"]
+                    missing_actor_fields = [field for field in required_actor_fields if field not in sample_actor]
+                    
+                    if not missing_actor_fields:
+                        self.log("✅ Actor details included (id, name, icon, description)")
+                        self.test_results["actors_used"]["passed"] += 1
+                    else:
+                        self.log(f"❌ Missing actor fields: {missing_actor_fields}")
+                        self.test_results["actors_used"]["failed"] += 1
+                        self.test_results["actors_used"]["errors"].append(f"Missing actor fields: {missing_actor_fields}")
+                    
+                    # Check required run statistics fields
+                    required_stats_fields = ["total_runs", "last_run_started", "last_run_status", "last_run_duration", "last_run_id"]
+                    missing_stats_fields = [field for field in required_stats_fields if field not in sample_actor]
+                    
+                    if not missing_stats_fields:
+                        self.log("✅ Run statistics included (total_runs, last_run_started, last_run_status, last_run_duration, last_run_id)")
+                        self.test_results["actors_used"]["passed"] += 1
+                        
+                        # Verify data types and values
+                        total_runs = sample_actor.get("total_runs")
+                        if isinstance(total_runs, int) and total_runs > 0:
+                            self.log(f"✅ total_runs is valid integer: {total_runs}")
+                            self.test_results["actors_used"]["passed"] += 1
+                        else:
+                            self.log(f"❌ total_runs invalid: {total_runs}")
+                            self.test_results["actors_used"]["failed"] += 1
+                            self.test_results["actors_used"]["errors"].append(f"total_runs invalid: {total_runs}")
+                        
+                        last_run_started = sample_actor.get("last_run_started")
+                        if last_run_started:
+                            self.log(f"✅ last_run_started present: {last_run_started}")
+                            self.test_results["actors_used"]["passed"] += 1
+                        else:
+                            self.log("❌ last_run_started missing or empty")
+                            self.test_results["actors_used"]["failed"] += 1
+                            self.test_results["actors_used"]["errors"].append("last_run_started missing")
+                        
+                        last_run_status = sample_actor.get("last_run_status")
+                        valid_statuses = ["queued", "running", "succeeded", "failed"]
+                        if last_run_status in valid_statuses:
+                            self.log(f"✅ last_run_status valid: {last_run_status}")
+                            self.test_results["actors_used"]["passed"] += 1
+                        else:
+                            self.log(f"❌ last_run_status invalid: {last_run_status}")
+                            self.test_results["actors_used"]["failed"] += 1
+                            self.test_results["actors_used"]["errors"].append(f"last_run_status invalid: {last_run_status}")
+                        
+                        last_run_id = sample_actor.get("last_run_id")
+                        if last_run_id:
+                            self.log(f"✅ last_run_id present: {last_run_id}")
+                            self.test_results["actors_used"]["passed"] += 1
+                        else:
+                            self.log("❌ last_run_id missing")
+                            self.test_results["actors_used"]["failed"] += 1
+                            self.test_results["actors_used"]["errors"].append("last_run_id missing")
+                        
+                        # Check duration (can be None for running jobs)
+                        last_run_duration = sample_actor.get("last_run_duration")
+                        if last_run_duration is None or isinstance(last_run_duration, (int, float)):
+                            self.log(f"✅ last_run_duration valid: {last_run_duration}")
+                            self.test_results["actors_used"]["passed"] += 1
+                        else:
+                            self.log(f"❌ last_run_duration invalid type: {type(last_run_duration)}")
+                            self.test_results["actors_used"]["failed"] += 1
+                            self.test_results["actors_used"]["errors"].append("last_run_duration invalid type")
+                    else:
+                        self.log(f"❌ Missing run statistics fields: {missing_stats_fields}")
+                        self.test_results["actors_used"]["failed"] += 1
+                        self.test_results["actors_used"]["errors"].append(f"Missing run statistics fields: {missing_stats_fields}")
+                    
+                    # Test sorting (most recent first)
+                    if len(actors_used) > 1:
+                        first_actor = actors_used[0]
+                        second_actor = actors_used[1]
+                        
+                        first_time = first_actor.get("last_run_started")
+                        second_time = second_actor.get("last_run_started")
+                        
+                        if first_time and second_time:
+                            # Convert to comparable format if needed
+                            try:
+                                from datetime import datetime
+                                if isinstance(first_time, str):
+                                    first_dt = datetime.fromisoformat(first_time.replace('Z', '+00:00'))
+                                else:
+                                    first_dt = first_time
+                                
+                                if isinstance(second_time, str):
+                                    second_dt = datetime.fromisoformat(second_time.replace('Z', '+00:00'))
+                                else:
+                                    second_dt = second_time
+                                
+                                if first_dt >= second_dt:
+                                    self.log("✅ Actors sorted by last run (most recent first)")
+                                    self.test_results["actors_used"]["passed"] += 1
+                                else:
+                                    self.log("❌ Actors not properly sorted by last run")
+                                    self.test_results["actors_used"]["failed"] += 1
+                                    self.test_results["actors_used"]["errors"].append("Actors not sorted by last run")
+                            except Exception as e:
+                                self.log(f"⚠️ Could not verify sorting due to date parsing: {e}")
+                        else:
+                            self.log("⚠️ Cannot verify sorting - missing timestamps")
+                    else:
+                        self.log("⚠️ Only one actor returned - cannot verify sorting")
+                    
+                    # Log sample response for verification
+                    self.log(f"Sample actor response: {sample_actor.get('name')} - {sample_actor.get('total_runs')} runs, last: {sample_actor.get('last_run_status')}")
+                    
+                else:
+                    self.log("⚠️ No actors returned - user may not have run history yet")
+                    # This is not necessarily an error if the user truly has no runs
+                    
+            else:
+                self.log("❌ actors-used response is not a list")
+                self.test_results["actors_used"]["failed"] += 1
+                self.test_results["actors_used"]["errors"].append("Response is not a list")
+        else:
+            self.log(f"❌ actors-used endpoint failed: {response.status_code if response else 'No response'}")
+            if response:
+                self.log(f"Response content: {response.text}")
+            self.test_results["actors_used"]["failed"] += 1
+            self.test_results["actors_used"]["errors"].append("actors-used endpoint failed")
+        
+        # Test with no authentication (should fail)
+        self.log("Testing actors-used endpoint without authentication...")
+        temp_token = self.auth_token
+        self.auth_token = None
+        
+        response = self.make_request("GET", "/actors-used")
+        if response and response.status_code == 401:
+            self.log("✅ actors-used endpoint properly requires authentication")
+            self.test_results["actors_used"]["passed"] += 1
+        else:
+            self.log(f"❌ actors-used endpoint should require authentication: {response.status_code if response else 'No response'}")
+            self.test_results["actors_used"]["failed"] += 1
+            self.test_results["actors_used"]["errors"].append("Endpoint does not require authentication")
+        
+        # Restore token
+        self.auth_token = temp_token
+        
+        self.log("actors-used endpoint testing completed")
+
     def test_scraper_creation_system(self):
         """Test complete scraper creation system as per review requirements"""
         self.log("=== Testing Scraper Creation System ===")
