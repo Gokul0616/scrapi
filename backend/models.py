@@ -127,6 +127,8 @@ class Run(BaseModel):
     error_message: Optional[str] = None
     logs: List[str] = Field(default_factory=list)
     cost: float = 0.0
+    build_number: Optional[str] = None
+    origin: str = "Web"
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class RunCreate(BaseModel):
