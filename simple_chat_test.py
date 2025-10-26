@@ -7,7 +7,7 @@ import requests
 import json
 
 # Backend URL
-BACKEND_URL = "https://actord-showcase.preview.emergentagent.com/api"
+BACKEND_URL = "https://pixel-perfect-ui-18.preview.emergentagent.com/api"
 
 def test_basic_chat():
     print("=== Testing Global Chat Assistant ===")
