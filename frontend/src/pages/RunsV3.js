@@ -134,27 +134,42 @@ const RunsV3 = () => {
     );
     
     if (runningAndQueuedRuns.length === 0) {
-      alert('No running or queued runs to abort');
-      return;
-    }
-
-    if (!window.confirm(`Are you sure you want to abort ${runningAndQueuedRuns.length} running/queued run(s)?`)) {
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem('token');
-      await axios.post(`${API}/runs/abort-all`, null, {
-        params: { status_filter: 'all' },
-        headers: { Authorization: `Bearer ${token}` }
+      setAlertModal({
+        show: true,
+        type: 'info',
+        title: 'No Runs to Abort',
+        message: 'No running or queued runs to abort'
       });
-      
-      // Refresh the runs list
-      await fetchRuns();
-    } catch (error) {
-      console.error('Failed to abort all runs:', error);
-      alert(error.response?.data?.detail || 'Failed to abort all runs');
+      return;
     }
+
+    // Show confirmation modal
+    setConfirmModal({
+      show: true,
+      type: 'warning',
+      title: 'Abort All Runs',
+      message: `Are you sure you want to abort ${runningAndQueuedRuns.length} running/queued run(s)?`,
+      onConfirm: async () => {
+        try {
+          const token = localStorage.getItem('token');
+          await axios.post(`${API}/runs/abort-all`, null, {
+            params: { status_filter: 'all' },
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          
+          // Refresh the runs list
+          await fetchRuns();
+        } catch (error) {
+          console.error('Failed to abort all runs:', error);
+          setAlertModal({
+            show: true,
+            type: 'error',
+            title: 'Abort Failed',
+            message: error.response?.data?.detail || 'Failed to abort all runs'
+          });
+        }
+      }
+    });
   };
 
   const handleAbortClick = (run, event) => {
