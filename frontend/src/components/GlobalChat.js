@@ -106,6 +106,14 @@ const GlobalChat = () => {
     const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
     const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
     
+    // Check if movement exceeds threshold
+    const deltaX = Math.abs(clientX - dragStart.startX);
+    const deltaY = Math.abs(clientY - dragStart.startY);
+    
+    if (deltaX > DRAG_THRESHOLD || deltaY > DRAG_THRESHOLD) {
+      setDragMoved(true); // User is actually dragging, not just clicking
+    }
+    
     setCurrentPos({
       x: clientX - dragStart.x,
       y: clientY - dragStart.y
