@@ -199,25 +199,40 @@ const GlobalChat = () => {
   };
 
   const clearChatHistory = async () => {
-    if (!window.confirm('Are you sure you want to clear your chat history?')) {
-      return;
-    }
+    // Show confirmation modal
+    setConfirmModal({
+      show: true,
+      type: 'warning',
+      title: 'Clear Chat History',
+      message: 'Are you sure you want to clear your chat history?',
+      onConfirm: async () => {
+        try {
+          const token = localStorage.getItem('token');
+          await axios.delete(
+            `${API}/chat/global/history`,
+            {
+              headers: { Authorization: `Bearer ${token}` }
+            }
+          );
 
-    try {
-      const token = localStorage.getItem('token');
-      await axios.delete(
-        `${API}/chat/global/history`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
+          setMessages([]);
+          setAlertModal({
+            show: true,
+            type: 'success',
+            title: 'Success',
+            message: 'Chat history cleared successfully!'
+          });
+        } catch (error) {
+          console.error('Error clearing chat history:', error);
+          setAlertModal({
+            show: true,
+            type: 'error',
+            title: 'Error',
+            message: 'Failed to clear chat history. Please try again.'
+          });
         }
-      );
-
-      setMessages([]);
-      alert('Chat history cleared successfully!');
-    } catch (error) {
-      console.error('Error clearing chat history:', error);
-      alert('Failed to clear chat history. Please try again.');
-    }
+      }
+    });
   };
 
   // Execute commands from AI (navigation, export, form filling, etc.)
