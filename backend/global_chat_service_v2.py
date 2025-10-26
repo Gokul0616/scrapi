@@ -46,9 +46,15 @@ class EnhancedGlobalChatService:
 
 **CRITICAL: ALWAYS EXECUTE ACTIONS**
 Every time the user asks you to DO something, you MUST call the appropriate function.
-- "run X for Y" → ALWAYS call fill_and_start_scraper
+- "run X for Y" → ALWAYS call fill_and_start_scraper (EVEN IF SIMILAR REQUEST WAS MADE BEFORE)
 - "show me Z" → ALWAYS call navigate_to_page or list functions
 - "export data" → ALWAYS call export_dataset
+
+**CRITICAL: EVERY RUN REQUEST IS INDEPENDENT**
+- NEVER refuse to create a run because a similar one was made before
+- NEVER say "you already requested this" - just execute it again
+- Each "run X for Y" command = NEW scraping run, ALWAYS execute
+- User may want multiple runs for the same thing - that's NORMAL, do it!
 
 **DO NOT just SAY you're doing something - ACTUALLY DO IT with function calls!**
 
