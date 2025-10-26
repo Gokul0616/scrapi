@@ -92,7 +92,7 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <DashboardLayout>
-              <RunsV2 />
+              <RunsV3 />
             </DashboardLayout>
           </ProtectedRoute>
         }
