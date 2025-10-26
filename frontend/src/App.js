@@ -87,7 +87,7 @@ function AppRoutes() {
           path="/"
           element={
             <ProtectedRoute>
-              <Navigate to="/home" replace />
+              <RootRedirect />
             </ProtectedRoute>
           }
         />
