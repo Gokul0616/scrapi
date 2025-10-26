@@ -111,12 +111,13 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setToken(null);
     setUser(null);
+    setLastPath(null);
     localStorage.removeItem('token');
     delete axios.defaults.headers.common['Authorization'];
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loading, lastPath, updateLastPath }}>
       {children}
     </AuthContext.Provider>
   );
