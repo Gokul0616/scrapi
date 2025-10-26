@@ -896,7 +896,7 @@ FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": 
             response = await llm_chat.send_message(user_msg)
             
             # LOG: Check what the AI responded
-            logger.info(f"AI Response: {response[:200]}...")
+            logger.info(f"AI Response: {response[:500]}...")
             
             # Check for MULTIPLE function calls (support multiple runs in one request)
             function_calls = []
@@ -904,11 +904,12 @@ FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": 
                 try:
                     function_call_json = json.loads(match.group(1))
                     function_calls.append(function_call_json)
-                    logger.info(f"Found function call: {function_call_json.get('name')}")
-                except:
+                    logger.info(f"✓ Found function call: {function_call_json.get('name')} with args: {function_call_json.get('arguments')}")
+                except Exception as e:
+                    logger.error(f"❌ Failed to parse function call: {str(e)}")
                     pass
             
-            logger.info(f"Total function calls found: {len(function_calls)}")
+            logger.info(f"📊 Total function calls found: {len(function_calls)}")
             
             # Track all created runs and actions
             created_run_ids = []
