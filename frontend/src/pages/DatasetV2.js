@@ -186,15 +186,22 @@ const DatasetV2 = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
+      // Validate response data
+      if (!response || !response.data || !response.data.template) {
+        throw new Error('Invalid response from server');
+      }
+
       setChatMessages(prev => [...prev, {
         role: 'assistant',
         content: `**${channel.toUpperCase()} Outreach Template:**\n\n${response.data.template}`,
         created_at: new Date().toISOString()
       }]);
     } catch (error) {
+      console.error('Template generation error:', error);
+      const errorMessage = error.response?.data?.detail || error.message || 'Failed to generate template';
       toast({
         title: 'Error',
-        description: 'Failed to generate template',
+        description: errorMessage,
         variant: 'destructive'
       });
     } finally {
