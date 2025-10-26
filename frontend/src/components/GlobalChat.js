@@ -46,6 +46,107 @@ const GlobalChat = () => {
     }
   }, [isOpen]);
 
+  // Get position styles based on corner
+  const getPositionStyles = () => {
+    const spacing = 24; // 1.5rem = 24px
+    const positions = {
+      'top-left': { top: `${spacing}px`, left: `${spacing}px`, bottom: 'auto', right: 'auto' },
+      'top-right': { top: `${spacing}px`, right: `${spacing}px`, bottom: 'auto', left: 'auto' },
+      'bottom-left': { bottom: `${spacing}px`, left: `${spacing}px`, top: 'auto', right: 'auto' },
+      'bottom-right': { bottom: `${spacing}px`, right: `${spacing}px`, top: 'auto', left: 'auto' }
+    };
+    return positions[position.corner] || positions['bottom-right'];
+  };
+
+  // Detect nearest corner based on current position
+  const getNearestCorner = (x, y) => {
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    
+    const distanceToLeft = x;
+    const distanceToRight = windowWidth - x;
+    const distanceToTop = y;
+    const distanceToBottom = windowHeight - y;
+    
+    const isLeft = distanceToLeft < distanceToRight;
+    const isTop = distanceToTop < distanceToBottom;
+    
+    if (isTop && isLeft) return 'top-left';
+    if (isTop && !isLeft) return 'top-right';
+    if (!isTop && isLeft) return 'bottom-left';
+    return 'bottom-right';
+  };
+
+  // Handle drag start
+  const handleDragStart = (e) => {
+    if (isOpen) return; // Don't drag when chat is open
+    
+    setIsDragging(true);
+    const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+    const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+    
+    const rect = buttonRef.current.getBoundingClientRect();
+    setDragStart({
+      x: clientX - rect.left,
+      y: clientY - rect.top
+    });
+    setCurrentPos({ x: rect.left, y: rect.top });
+  };
+
+  // Handle drag move
+  const handleDragMove = (e) => {
+    if (!isDragging) return;
+    
+    e.preventDefault();
+    const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+    const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+    
+    setCurrentPos({
+      x: clientX - dragStart.x,
+      y: clientY - dragStart.y
+    });
+  };
+
+  // Handle drag end
+  const handleDragEnd = () => {
+    if (!isDragging) return;
+    
+    setIsDragging(false);
+    
+    // Calculate center of button
+    const buttonSize = 56; // 14 * 4 = 56px (w-14 h-14)
+    const centerX = currentPos.x + buttonSize / 2;
+    const centerY = currentPos.y + buttonSize / 2;
+    
+    // Find nearest corner
+    const nearestCorner = getNearestCorner(centerX, centerY);
+    
+    // Update position
+    const newPosition = { corner: nearestCorner };
+    setPosition(newPosition);
+    localStorage.setItem('chatPosition', JSON.stringify(newPosition));
+  };
+
+  // Add/remove event listeners for dragging
+  useEffect(() => {
+    if (isDragging) {
+      const handleMove = (e) => handleDragMove(e);
+      const handleEnd = () => handleDragEnd();
+      
+      document.addEventListener('mousemove', handleMove);
+      document.addEventListener('mouseup', handleEnd);
+      document.addEventListener('touchmove', handleMove);
+      document.addEventListener('touchend', handleEnd);
+      
+      return () => {
+        document.removeEventListener('mousemove', handleMove);
+        document.removeEventListener('mouseup', handleEnd);
+        document.removeEventListener('touchmove', handleMove);
+        document.removeEventListener('touchend', handleEnd);
+      };
+    }
+  }, [isDragging, currentPos, dragStart]);
+
   const loadChatHistory = async () => {
     try {
       const token = localStorage.getItem('token');
