@@ -121,9 +121,22 @@ const RunsV3 = () => {
   };
 
   const formatTaskDescription = (run) => {
-    // Only show search terms (keywords)
+    // Show search terms (keywords) + location + max results
     const searchTerms = run.input_data?.search_terms?.join(', ') || 'N/A';
-    return searchTerms;
+    const location = run.input_data?.location || '';
+    const maxResults = run.input_data?.max_results || '';
+    
+    let taskDescription = searchTerms;
+    
+    if (location) {
+      taskDescription += ` in ${location}`;
+    }
+    
+    if (maxResults) {
+      taskDescription += ` (max ${maxResults})`;
+    }
+    
+    return taskDescription;
   };
 
   const formatTaskWithWrapping = (text) => {
