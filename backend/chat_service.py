@@ -43,14 +43,18 @@ class LeadChatService:
             system_message = self._build_system_message(lead_data)
 
             # Initialize LlmChat client
+            lead_id = lead_data.get('id', 'unknown')
+            session_id = f"lead_chat_{lead_id}"
+            
             chat_client = LlmChat(
                 api_key=self.api_key,
-                model="gpt-4o-mini",
-                system_prompt=system_message
-            )
+                session_id=session_id,
+                system_message=system_message
+            ).with_model("openai", "gpt-4o-mini")
 
             # Send message and get response
-            response = await chat_client.chat(UserMessage(content=user_message))
+            user_msg = UserMessage(text=user_message)
+            response = await chat_client.send_message(user_msg)
             
             logger.info(f"Generated engagement advice for lead: {lead_data.get('title', 'Unknown')}")
             return response
