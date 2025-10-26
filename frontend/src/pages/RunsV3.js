@@ -66,6 +66,131 @@ const RunsV3 = () => {
     }
   };
 
+  const abortRun = async (runId) => {
+    try {
+      setAbortingRuns(prev => new Set([...prev, runId]));
+      const token = localStorage.getItem('token');
+      await axios.delete(`${API}/runs/${runId}/abort`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      // Refresh the runs list
+      await fetchRuns();
+    } catch (error) {
+      console.error('Failed to abort run:', error);
+      alert(error.response?.data?.detail || 'Failed to abort run');
+    } finally {
+      setAbortingRuns(prev => {
+        const next = new Set(prev);
+        next.delete(runId);
+        return next;
+      });
+    }
+  };
+
+  const abortMultipleRuns = async (runIds) => {
+    try {
+      runIds.forEach(id => setAbortingRuns(prev => new Set([...prev, id])));
+      const token = localStorage.getItem('token');
+      await axios.post(`${API}/runs/abort-multiple`, runIds, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      // Refresh the runs list
+      await fetchRuns();
+      setSelectedRuns([]);
+    } catch (error) {
+      console.error('Failed to abort runs:', error);
+      alert(error.response?.data?.detail || 'Failed to abort runs');
+    } finally {
+      runIds.forEach(id => {
+        setAbortingRuns(prev => {
+          const next = new Set(prev);
+          next.delete(id);
+          return next;
+        });
+      });
+    }
+  };
+
+  const abortAllRunningRuns = async () => {
+    const runningAndQueuedRuns = runs.filter(run => 
+      run.status === 'running' || run.status === 'queued'
+    );
+    
+    if (runningAndQueuedRuns.length === 0) {
+      alert('No running or queued runs to abort');
+      return;
+    }
+
+    if (!window.confirm(`Are you sure you want to abort ${runningAndQueuedRuns.length} running/queued run(s)?`)) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(`${API}/runs/abort-all`, null, {
+        params: { status_filter: 'all' },
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      // Refresh the runs list
+      await fetchRuns();
+    } catch (error) {
+      console.error('Failed to abort all runs:', error);
+      alert(error.response?.data?.detail || 'Failed to abort all runs');
+    }
+  };
+
+  const handleAbortClick = (run, event) => {
+    event.stopPropagation();
+    setAbortModalData(run);
+    setShowAbortModal(true);
+  };
+
+  const confirmAbort = async () => {
+    if (abortModalData) {
+      await abortRun(abortModalData.id);
+      setShowAbortModal(false);
+      setAbortModalData(null);
+    }
+  };
+
+  const toggleRunSelection = (runId) => {
+    setSelectedRuns(prev => {
+      if (prev.includes(runId)) {
+        return prev.filter(id => id !== runId);
+      } else {
+        return [...prev, runId];
+      }
+    });
+  };
+
+  const toggleSelectAll = () => {
+    const abortableRuns = runs.filter(run => 
+      run.status === 'running' || run.status === 'queued'
+    );
+    
+    if (selectedRuns.length === abortableRuns.length) {
+      setSelectedRuns([]);
+    } else {
+      setSelectedRuns(abortableRuns.map(run => run.id));
+    }
+  };
+
+  const abortSelectedRuns = async () => {
+    if (selectedRuns.length === 0) {
+      alert('No runs selected');
+      return;
+    }
+
+    if (!window.confirm(`Are you sure you want to abort ${selectedRuns.length} selected run(s)?`)) {
+      return;
+    }
+
+    await abortMultipleRuns(selectedRuns);
+  };
+
   const getStatusDisplay = (status) => {
     const statusConfig = {
       succeeded: {
