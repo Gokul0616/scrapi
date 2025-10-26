@@ -23,9 +23,8 @@ const RunsV3 = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [limit, setLimit] = useState(20);
-  const [sortBy, setSortBy] = useState('created_at');
+  const [sortBy, setSortBy] = useState('started_at');
   const [sortOrder, setSortOrder] = useState('desc');
-  const [goToPageInput, setGoToPageInput] = useState('');
 
   useEffect(() => {
     fetchRuns();
