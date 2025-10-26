@@ -33,6 +33,10 @@ const GlobalChat = () => {
   const [currentPos, setCurrentPos] = useState({ x: 0, y: 0 });
   const buttonRef = useRef(null);
   const DRAG_THRESHOLD = 5; // pixels - minimum movement to consider it a drag
+  
+  // Alert modal states
+  const [alertModal, setAlertModal] = useState({ show: false, type: 'info', title: '', message: '' });
+  const [confirmModal, setConfirmModal] = useState({ show: false, type: 'warning', title: '', message: '', onConfirm: null });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
