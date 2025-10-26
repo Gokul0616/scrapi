@@ -1137,17 +1137,16 @@ class ScrapiAPITester:
         
         try:
             response = self.make_request("GET", "/actors-used")
-            self.log(f"DEBUG: Response status code: {response.status_code if response else 'None'}")
-            if response and response.status_code in [401, 403]:
+            if response is None:
+                # Network error when no auth - this is expected and good
+                self.log("✅ actors-used endpoint blocks unauthenticated requests (network error)")
+                self.test_results["actors_used"]["passed"] += 1
+            elif response.status_code in [401, 403]:
                 self.log(f"✅ actors-used endpoint properly requires authentication ({response.status_code})")
                 self.test_results["actors_used"]["passed"] += 1
-            elif response and response.status_code == 422:
+            elif response.status_code == 422:
                 # FastAPI returns 422 for missing auth sometimes
                 self.log("✅ actors-used endpoint properly requires authentication (422)")
-                self.test_results["actors_used"]["passed"] += 1
-            elif response is None:
-                # Network error when no auth - this can happen
-                self.log("✅ actors-used endpoint blocks unauthenticated requests (network error)")
                 self.test_results["actors_used"]["passed"] += 1
             else:
                 self.log(f"❌ actors-used endpoint should require authentication: {response.status_code}")
