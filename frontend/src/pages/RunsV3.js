@@ -333,7 +333,7 @@ const RunsV3 = () => {
                   </td>
 
                   {/* Task - Keywords + Location + Max Results, wrapped */}
-                  <td className="px-6 py-4 min-w-[200px] max-w-[300px]">
+                  <td className="px-6 py-4 min-w-[200px] max-w-[500px]">
                     <div className="text-sm text-gray-700 break-words">
                       {formatTaskWithWrapping(formatTaskDescription(run)).map((line, idx) => (
                         <div key={idx}>{line}</div>
