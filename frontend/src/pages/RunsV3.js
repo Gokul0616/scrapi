@@ -142,34 +142,35 @@ const RunsV3 = () => {
   return (
     <div className="flex-1 bg-white min-h-screen">
       {/* Header */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-gray-200 bg-white">
         <div className="px-6 py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-semibold text-gray-900">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-xl font-normal text-gray-900">
               Runs <span className="text-gray-400">({totalCount})</span>
             </h1>
             <Button
               variant="outline"
               size="sm"
-              className="border-gray-300 text-gray-700 hover:bg-gray-50"
+              className="h-8 px-3 border-gray-300 text-gray-700 text-sm hover:bg-gray-50"
             >
               API
             </Button>
           </div>
-        </div>
 
-        {/* Search */}
-        <div className="px-6 pb-4">
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <Input
-              placeholder="Search by run ID"
-              value={searchQuery}
-              onChange={handleSearch}
-              className="pl-10 h-9 border-gray-300 text-sm"
-            />
+          {/* Search */}
+          <div className="mb-3">
+            <div className="relative max-w-xs">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Input
+                placeholder="Search by run ID"
+                value={searchQuery}
+                onChange={handleSearch}
+                className="pl-9 h-9 border-gray-300 text-sm focus:border-gray-400 focus:ring-0"
+              />
+            </div>
           </div>
-          <p className="text-sm text-gray-600 mt-3">
+          
+          <p className="text-sm text-gray-600">
             {totalCount} recent runs
           </p>
         </div>
@@ -179,32 +180,32 @@ const RunsV3 = () => {
       <div className="overflow-x-auto">
         {runs.length === 0 ? (
           <div className="text-center py-16 text-gray-500">
-            <p className="text-lg">No runs found</p>
+            <p className="text-base">No runs found</p>
             <p className="text-sm text-gray-400 mt-2">
               {searchQuery ? 'Try a different search term' : 'Start a new scraping run to see it here'}
             </p>
           </div>
         ) : (
-          <table className="w-full">
+          <table className="w-full border-collapse">
             <thead>
-              <tr className="border-b border-gray-200">
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              <tr className="border-b border-gray-200 bg-white">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
                   Actor
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
                   Task
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
                   Results
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
                   Usage
                 </th>
                 <th 
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:text-gray-900"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide cursor-pointer hover:text-gray-700"
                   onClick={() => handleSort('started_at')}
                 >
                   <div className="flex items-center gap-1">
@@ -214,17 +215,17 @@ const RunsV3 = () => {
                     )}
                   </div>
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
                   Finished
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
                   Duration
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
                   Build
                 </th>
                 <th 
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider cursor-pointer hover:text-gray-900"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide cursor-pointer hover:text-gray-700"
                   onClick={() => handleSort('origin')}
                 >
                   <div className="flex items-center gap-1">
@@ -236,74 +237,111 @@ const RunsV3 = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
-              {runs.map((run) => (
+            <tbody className="bg-white">
+              {runs.map((run, index) => (
                 <tr 
                   key={run.id} 
-                  className="hover:bg-gray-50 transition-colors cursor-pointer"
+                  className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
+                    run.status === 'succeeded' && run.results_count > 0 ? 'cursor-pointer' : ''
+                  }`}
                   onClick={() => run.status === 'succeeded' && run.results_count > 0 && navigate(`/dataset/${run.id}`)}
                 >
+                  {/* Status - Just Icon */}
                   <td className="px-6 py-4">
-                    {getStatusIcon(run.status)}
+                    <div className="flex items-center">
+                      {getStatusIcon(run.status)}
+                    </div>
                   </td>
+
+                  {/* Actor - Icon + Name */}
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-lg">
+                      <div className="w-8 h-8 rounded bg-gray-100 flex items-center justify-center text-base flex-shrink-0">
                         📍
                       </div>
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">
+                      <div className="min-w-0">
+                        <div className="text-sm font-medium text-gray-900 truncate">
                           {run.actor_name}
                         </div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-gray-500 truncate">
                           comp...places @ Pay per event
                         </div>
                       </div>
                     </div>
                   </td>
+
+                  {/* Task - Show keywords, location, max */}
                   <td className="px-6 py-4">
-                    <div className="text-sm text-gray-700 max-w-md truncate">
-                      {run.input_data?.search_terms?.length > 0 
-                        ? `Scraping finished. You can view all scraped places laid out on a map on...`
-                        : 'Task details'}
+                    <div className="text-sm text-gray-700 max-w-md">
+                      {formatTaskDescription(run)}
                     </div>
                   </td>
+
+                  {/* Results - Blue number */}
                   <td className="px-6 py-4">
                     <span className="text-sm font-medium text-blue-600">
                       {run.results_count}
                     </span>
                   </td>
+
+                  {/* Usage - Dollar amount or dash */}
                   <td className="px-6 py-4">
                     <span className="text-sm text-gray-700">
                       {formatUsage(run.cost)}
                     </span>
                   </td>
+
+                  {/* Started - Date on top, time below */}
                   <td className="px-6 py-4">
-                    <div className="text-sm text-gray-700">
-                      {formatDateTime(run.started_at).split(' ')[0]}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {formatDateTime(run.started_at).split(' ')[1]}
-                    </div>
+                    {run.started_at ? (
+                      <div>
+                        <div className="text-sm text-gray-900">
+                          {formatDateTime(run.started_at).split(' ')[0]}
+                        </div>
+                        <div className="text-xs text-gray-500 mt-0.5">
+                          {formatDateTime(run.started_at).split(' ')[1]}
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-gray-400">-</span>
+                    )}
                   </td>
+
+                  {/* Finished - Date on top, time below */}
                   <td className="px-6 py-4">
-                    <div className="text-sm text-gray-700">
-                      {formatDateTime(run.finished_at).split(' ')[0]}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {formatDateTime(run.finished_at).split(' ')[1]}
-                    </div>
+                    {run.finished_at ? (
+                      <div>
+                        <div className="text-sm text-gray-900">
+                          {formatDateTime(run.finished_at).split(' ')[0]}
+                        </div>
+                        <div className="text-xs text-gray-500 mt-0.5">
+                          {formatDateTime(run.finished_at).split(' ')[1]}
+                        </div>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-gray-400">-</span>
+                    )}
                   </td>
+
+                  {/* Duration - "X s" format */}
                   <td className="px-6 py-4">
                     <span className="text-sm text-gray-700">
                       {formatDuration(run.duration_seconds)}
                     </span>
                   </td>
+
+                  {/* Build - Blue link style or dash */}
                   <td className="px-6 py-4">
-                    <span className="text-sm text-blue-600 hover:underline cursor-pointer">
-                      {run.build_number || '-'}
-                    </span>
+                    {run.build_number ? (
+                      <span className="text-sm text-blue-600 hover:underline cursor-pointer">
+                        {run.build_number}
+                      </span>
+                    ) : (
+                      <span className="text-sm text-gray-400">-</span>
+                    )}
                   </td>
+
+                  {/* Origin - Web */}
                   <td className="px-6 py-4">
                     <span className="text-sm text-gray-700">
                       {run.origin || 'Web'}
@@ -317,10 +355,11 @@ const RunsV3 = () => {
       </div>
 
       {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="border-t border-gray-200 px-6 py-4">
+      {totalPages > 0 && (
+        <div className="border-t border-gray-200 bg-white px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            {/* Items per page */}
+            <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600">Items per page:</span>
               <select
                 value={limit}
@@ -328,7 +367,7 @@ const RunsV3 = () => {
                   setLimit(parseInt(e.target.value));
                   setPage(1);
                 }}
-                className="border border-gray-300 rounded px-2 py-1 text-sm"
+                className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-gray-400"
               >
                 <option value="10">10</option>
                 <option value="20">20</option>
@@ -337,6 +376,7 @@ const RunsV3 = () => {
               </select>
             </div>
 
+            {/* Page navigation */}
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">Go to page:</span>
@@ -347,38 +387,37 @@ const RunsV3 = () => {
                   value={goToPageInput}
                   onChange={(e) => setGoToPageInput(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleGoToPage()}
-                  className="w-20 h-8 text-sm border-gray-300"
+                  className="w-16 h-8 text-sm border-gray-300 text-center focus:border-gray-400 focus:ring-0"
                   placeholder={page.toString()}
                 />
                 <Button
                   size="sm"
                   onClick={handleGoToPage}
-                  variant="outline"
-                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                  className="h-8 px-3 bg-white border border-gray-300 text-gray-700 text-sm hover:bg-gray-50"
                 >
                   Go
                 </Button>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <Button
                   size="sm"
-                  variant="outline"
+                  variant="ghost"
                   onClick={() => setPage(Math.max(1, page - 1))}
                   disabled={page === 1}
-                  className="border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                  className="h-8 w-8 p-0 text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
-                <span className="px-3 py-1 text-sm font-medium text-gray-700 bg-gray-100 rounded">
+                <div className="px-3 py-1 text-sm font-medium text-gray-700">
                   {page}
-                </span>
+                </div>
                 <Button
                   size="sm"
-                  variant="outline"
+                  variant="ghost"
                   onClick={() => setPage(Math.min(totalPages, page + 1))}
                   disabled={page === totalPages}
-                  className="border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+                  className="h-8 w-8 p-0 text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </Button>
