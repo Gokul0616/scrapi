@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import AlertModal from './AlertModal';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { MessageCircle, X, Send, Minimize2, Trash2, RefreshCw, Navigation } from 'lucide-react';
