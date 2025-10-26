@@ -229,55 +229,129 @@ const DatasetV2 = () => {
 
   if (loading) {
     return (
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center bg-white min-h-screen">
         <div className="text-center">
           <div className="text-4xl mb-4">🕷️</div>
-          <p className="text-gray-600">Loading leads...</p>
+          <p className="text-gray-600">Loading dataset...</p>
         </div>
       </div>
     );
   }
 
+  const tabs = [
+    { id: 'overview', label: 'Overview', count: filteredItems.length },
+    { id: 'contact', label: 'Contact info' },
+    { id: 'social', label: 'Social media' },
+    { id: 'rating', label: 'Rating' },
+    { id: 'reviews', label: 'Reviews (if any)' },
+    { id: 'enrichment', label: 'Leads Enrichment' },
+    { id: 'all', label: 'All fields' },
+    { id: 'preview', label: 'Preview in new tab', icon: Eye },
+    { id: 'table', label: 'Table', icon: TableIcon }
+  ];
+
   return (
-    <div className="flex-1 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
-      {/* Header */}
-      <div className="bg-white border-b shadow-sm">
-        <div className="px-8 py-6">
+    <div className="flex-1 bg-white min-h-screen">
+      {/* Header with Tabs */}
+      <div className="border-b border-gray-200">
+        {/* Top Header */}
+        <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm" onClick={() => navigate('/runs')} className="hover:bg-gray-100">
+              <Button variant="ghost" size="sm" onClick={() => navigate('/runs')} className="hover:bg-gray-50">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Runs
+                Actor
               </Button>
-              <div className="border-l h-8"></div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">Leads Dashboard</h1>
-                <p className="text-gray-500 mt-1">Run ID: {runId.slice(0, 8)}... • {filteredItems.length} Leads</p>
-              </div>
+              <div className="border-l h-6"></div>
+              <h1 className="text-2xl font-semibold text-blue-600">Google Maps Scraper - Run</h1>
+              <Button variant="ghost" size="icon" className="hover:bg-gray-50">
+                <Star className="w-4 h-4" />
+              </Button>
             </div>
-            <div className="flex items-center space-x-3">
-              <Button variant="outline" onClick={() => handleExport('json')} className="hover:bg-gray-50">
-                <Download className="w-4 h-4 mr-2" />
-                Export JSON
-              </Button>
-              <Button variant="outline" onClick={() => handleExport('csv')} className="hover:bg-gray-50">
-                <Download className="w-4 h-4 mr-2" />
-                Export CSV
-              </Button>
+            <div className="flex items-center space-x-2">
+              <Button variant="outline" size="sm" className="hover:bg-gray-50">Actions</Button>
+              <Button variant="outline" size="sm" className="hover:bg-gray-50">API</Button>
+              <Button variant="outline" size="sm" className="hover:bg-gray-50">Share</Button>
+              <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">Export</Button>
             </div>
           </div>
         </div>
 
-        {/* Search Bar */}
-        <div className="px-8 pb-6">
-          <div className="relative w-full max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <Input
-              placeholder="Search leads by name, location, category..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 h-11 bg-gray-50 border-gray-200 focus:bg-white"
-            />
+        {/* Success Banner */}
+        <div className="px-6 py-4 bg-green-50 border-b border-green-200">
+          <div className="flex items-start">
+            <div className="flex-shrink-0">
+              <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5" />
+            </div>
+            <div className="ml-3 flex-1">
+              <p className="text-sm text-green-800">
+                <strong>Scraping finished.</strong> You can view all scraped places laid out on a map on:{' '}
+                <a href="#" className="text-blue-600 hover:underline">
+                  View results map
+                </a>
+                . It can take some time to fully load for large datasets.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Bar */}
+        <div className="px-6 py-3 bg-white border-b border-gray-200">
+          <div className="flex items-center space-x-8 text-sm">
+            <div>
+              <span className="text-gray-600">RESULTS</span>
+              <span className="ml-2 text-blue-600 font-semibold">{filteredItems.length}</span>
+            </div>
+            <div>
+              <span className="text-gray-600">REQUESTS</span>
+              <span className="ml-2 text-gray-900 font-semibold">2 of 20 handled</span>
+            </div>
+            <div>
+              <span className="text-gray-600">PRICE</span>
+              <span className="ml-2 text-gray-900 font-semibold">$0.207</span>
+            </div>
+            <div>
+              <span className="text-gray-600">STARTED</span>
+              <span className="ml-2 text-gray-900">{new Date().toLocaleString()}</span>
+            </div>
+            <div>
+              <span className="text-gray-600">DURATION</span>
+              <span className="ml-2 text-gray-900">12 s</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Tabs Navigation */}
+        <div className="px-6 flex items-center justify-between border-b border-gray-200">
+          <div className="flex items-center space-x-1">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors flex items-center space-x-2 ${
+                  activeTab === tab.id
+                    ? 'border-blue-600 text-blue-600'
+                    : 'border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300'
+                }`}
+              >
+                {tab.icon && <tab.icon className="w-4 h-4" />}
+                <span>{tab.label}</span>
+                {tab.count !== undefined && (
+                  <span className="ml-1 px-1.5 py-0.5 text-xs bg-gray-100 rounded">{tab.count}</span>
+                )}
+              </button>
+            ))}
+          </div>
+          <div className="py-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowColumnSettings(!showColumnSettings)}
+              className="flex items-center space-x-2"
+            >
+              <Settings className="w-4 h-4" />
+              <span>Table settings</span>
+            </Button>
           </div>
         </div>
       </div>
