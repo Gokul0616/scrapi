@@ -60,19 +60,40 @@ const RunsV3 = () => {
     }
   };
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'succeeded':
-        return <CheckCircle2 className="w-4 h-4 text-green-600" />;
-      case 'failed':
-        return <XCircle className="w-4 h-4 text-red-600" />;
-      case 'running':
-        return <Clock className="w-4 h-4 text-blue-600 animate-pulse" />;
-      case 'queued':
-        return <Clock className="w-4 h-4 text-gray-400" />;
-      default:
-        return <Clock className="w-4 h-4 text-gray-400" />;
-    }
+  const getStatusDisplay = (status) => {
+    const statusConfig = {
+      succeeded: {
+        icon: <CheckCircle2 className="w-4 h-4 text-green-600" />,
+        text: 'Succeeded',
+        color: 'text-green-700'
+      },
+      failed: {
+        icon: <XCircle className="w-4 h-4 text-red-600" />,
+        text: 'Failed',
+        color: 'text-red-700'
+      },
+      running: {
+        icon: <Clock className="w-4 h-4 text-blue-600 animate-pulse" />,
+        text: 'Running',
+        color: 'text-blue-700'
+      },
+      queued: {
+        icon: <Clock className="w-4 h-4 text-gray-400" />,
+        text: 'Queued',
+        color: 'text-gray-600'
+      }
+    };
+
+    const config = statusConfig[status] || statusConfig.queued;
+    
+    return (
+      <div className="flex items-center gap-2">
+        {config.icon}
+        <span className={`text-sm font-medium ${config.color}`}>
+          {config.text}
+        </span>
+      </div>
+    );
   };
 
   const formatDateTime = (dateString) => {
