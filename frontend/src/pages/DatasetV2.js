@@ -505,7 +505,7 @@ const DatasetV2 = () => {
                   {items.map((item, index) => (
                     <tr key={item.id} className="hover:bg-gray-50 border-b border-gray-100">
                       {visibleColumns.number && (
-                        <td className="px-4 py-3 text-sm text-gray-900">{index + 1}</td>
+                        <td className="px-4 py-3 text-sm text-gray-900">{(page - 1) * limit + index + 1}</td>
                       )}
                       {visibleColumns.title && (
                         <td className="px-4 py-3 text-sm">
