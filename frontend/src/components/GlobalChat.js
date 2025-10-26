@@ -236,15 +236,23 @@ const GlobalChat = () => {
           setTimeout(() => {
             const pageMap = {
               'dashboard': '/',
+              'home': '/',
               'actors': '/actors',
               'runs': '/runs',
               'datasets': '/datasets',
               'leads': '/datasets',
-              'proxies': '/proxies'
+              'proxies': '/proxies',
+              'marketplace': '/marketplace',
+              'store': '/store',
+              'my-scrapers': '/my-scrapers',
+              'create-scraper': '/create-scraper'
             };
             
             if (pageMap[page]) {
               navigate(pageMap[page]);
+            } else if (page.startsWith('/')) {
+              // Direct path navigation
+              navigate(page);
             }
           }, 800); // Small delay for user to see the feedback
         }
@@ -256,11 +264,10 @@ const GlobalChat = () => {
           }, 800);
         }
         
-        // Execute run details viewing
-        if (action === 'view_run' && page) {
+        // Execute run details viewing - navigate to dataset page with run_id
+        if (action === 'view_run' && run_id) {
           setTimeout(() => {
-            navigate(`/${page}`);
-            // Could scroll to specific run if needed
+            navigate(`/datasets?run_id=${run_id}`);
           }, 800);
         }
         
