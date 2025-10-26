@@ -83,7 +83,12 @@ const RunsV3 = () => {
       await fetchRuns();
     } catch (error) {
       console.error('Failed to abort run:', error);
-      alert(error.response?.data?.detail || 'Failed to abort run');
+      setAlertModal({
+        show: true,
+        type: 'error',
+        title: 'Abort Failed',
+        message: error.response?.data?.detail || 'Failed to abort run'
+      });
     } finally {
       setAbortingRuns(prev => {
         const next = new Set(prev);
