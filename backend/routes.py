@@ -766,8 +766,40 @@ async def global_chat(
         chat_service = EnhancedGlobalChatService(db, current_user['id'])
         result = await chat_service.chat(message)
         
-        # If a run was created, trigger parallel execution using task manager
-        if result.get("run_id") and result.get("actor_id"):
+        # Handle MULTIPLE runs if created (supports multiple commands in one request)
+        if result.get("run_ids") and len(result["run_ids"]) > 0:
+            # Start ALL runs in parallel
+            for idx, run_id in enumerate(result["run_ids"]):
+                actor_id = result.get("actor_id") if not result.get("run_ids") else (
+                    result.get("actor_id") if idx == 0 else None
+                )
+                input_data = result.get("input_data") if not result.get("run_ids") else (
+                    result.get("input_data") if idx == 0 else None
+                )
+                
+                # Fetch run details if not provided
+                if not actor_id or not input_data:
+                    run = await db.runs.find_one({"id": run_id}, {"_id": 0})
+                    if run:
+                        actor_id = run.get("actor_id")
+                        input_data = run.get("input_data")
+                
+                if actor_id and input_data:
+                    logger.info(f"🤖 AI Agent starting run {run_id} ({idx+1}/{len(result['run_ids'])}) from chat...")
+                    
+                    # Use task manager for parallel execution
+                    await task_manager.start_task(
+                        run_id,
+                        execute_scraping_job(
+                            run_id,
+                            actor_id,
+                            current_user['id'],
+                            input_data
+                        )
+                    )
+                    logger.info(f"✓ Run {run_id} started by AI Agent. Active tasks: {task_manager.get_running_count()}")
+        # Backwards compatibility: handle single run_id
+        elif result.get("run_id") and result.get("actor_id"):
             run_id = result["run_id"]
             actor_id = result["actor_id"]
             input_data = result["input_data"]
