@@ -805,21 +805,18 @@ You: First get recent runs, then navigate to the latest one
             # Get conversation history (last 30 messages for context)
             history = await self.get_conversation_history(limit=30)
             
-            # Create LLM client with user-specific session
-            session_id = f"global_chat_{self.user_id}"
-            
-            # Build conversation context with history
+            # Build conversation context with COMPLETE history for better context retention
             conversation_context = ""
             if len(history) > 1:  # More than just the current message
-                conversation_context = "\n\n**Previous Conversation:**\n"
-                # Include all messages except the last one (which is the current message)
-                for msg in history[:-1]:
-                    role = msg['role'].upper()
+                conversation_context = "\n\n**CONVERSATION HISTORY (Remember this context):**\n"
+                # Include ALL previous messages for full context
+                for msg in history[:-1]:  # Exclude current message
+                    role = "USER" if msg['role'] == 'user' else "ASSISTANT"
                     content = msg['content']
-                    conversation_context += f"{role}: {content}\n"
-                conversation_context += "\n**Current User Message:**\n"
+                    conversation_context += f"\n{role}: {content}\n"
+                conversation_context += "\n**CURRENT USER MESSAGE (respond to this):**\n"
             
-            # Enhanced system prompt with function calling instructions and context
+            # Enhanced system prompt with function calling instructions and FULL context
             enhanced_prompt = f"""{self.system_prompt}
 
 **Available Functions:**
@@ -830,24 +827,34 @@ You: First get recent runs, then navigate to the latest one
 2. I will execute the function and provide results
 3. Then respond naturally to the user with the data
 
+**MULTIPLE ACTIONS IN ONE REQUEST:**
+If user asks for MULTIPLE things (e.g., "run 2 for hotels and 5 for saloons"), use MULTIPLE function calls:
+FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["hotels"], "location": "City", "max_results": 2}}}}
+FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["saloons"], "location": "City", "max_results": 5}}}}
+
 **Examples:**
 User: "How many runs do I have?"
 You: FUNCTION_CALL: {{"name": "get_user_stats", "arguments": {{}}}}
 
 User: "Run google maps scraper for Hotels in NYC with 50 results"
-You: FUNCTION_CALL: {{"name": "create_scraping_run", "arguments": {{"actor_name": "Google Maps", "search_terms": ["Hotels"], "location": "New York, NY", "max_results": 50}}}}
+You: FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["Hotels"], "location": "New York, NY", "max_results": 50}}}}
 
-**Important:** 
-- Remember the conversation context
-- When user asks follow-up questions like "which one is best?", refer to previous messages
-- Use pronouns and references from earlier in the conversation
+User: "Run 2 for hotels in SF and 5 for saloons in LA"
+You: FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["hotels"], "location": "San Francisco, CA", "max_results": 2}}}}
+FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["saloons"], "location": "Los Angeles, CA", "max_results": 5}}}}
+
+**CRITICAL - REMEMBER CONVERSATION:**
+- ALWAYS refer to previous messages when user asks follow-up questions
+- When user says "run 5 more", check history for what they ran before
+- When user says "which one is best?", refer to previous context
+- Maintain context across ALL messages in conversation
 {conversation_context}"""
             
-            # Initialize LlmChat with session ID
-            session_id = f"global_chat_{self.user_id}"
+            # Initialize LlmChat WITHOUT session_id to avoid interference with our history management
+            # We manage history ourselves through the enhanced_prompt
             llm_chat = LlmChat(
                 api_key=self.api_key,
-                session_id=session_id,
+                session_id=f"global_{self.user_id}_{datetime.now().timestamp()}",  # Unique session per message
                 system_message=enhanced_prompt
             ).with_model("openai", "gpt-4o-mini")
             
@@ -857,79 +864,95 @@ You: FUNCTION_CALL: {{"name": "create_scraping_run", "arguments": {{"actor_name"
             # Get response using emergentintegrations
             response = await llm_chat.send_message(user_msg)
             
-            # Check if response contains function call
-            function_call_match = re.search(r'FUNCTION_CALL:\s*({.*?})\s*(?:\n|$)', response, re.DOTALL)
-            
-            # Track if a run was created
-            created_run_id = None
-            created_actor_id = None
-            created_input_data = None
-            action_metadata = None  # Track UI actions like navigate, export
-            
-            if function_call_match:
+            # Check for MULTIPLE function calls (support multiple runs in one request)
+            function_calls = []
+            for match in re.finditer(r'FUNCTION_CALL:\s*({.*?})(?=\s*(?:FUNCTION_CALL|$))', response, re.DOTALL):
                 try:
-                    function_call_json = json.loads(function_call_match.group(1))
-                    function_name = function_call_json.get("name")
-                    arguments = function_call_json.get("arguments", {})
-                    
-                    # Execute function
-                    function_result = await self.execute_function(function_name, arguments)
-                    function_result_dict = json.loads(function_result)
-                    
-                    # If this was a run creation, capture the run_id for task execution
-                    if function_name == "create_scraping_run" and function_result_dict.get("success"):
-                        created_run_id = function_result_dict.get("run_id")
-                        # Fetch run details for task execution
-                        if created_run_id:
-                            run = await self.db.runs.find_one({"id": created_run_id}, {"_id": 0})
-                            if run:
-                                created_actor_id = run.get("actor_id")
-                                created_input_data = run.get("input_data")
-                    
-                    # Capture UI action commands (navigate, export)
-                    if function_name in ["navigate_to_page", "export_dataset", "fill_and_start_scraper", 
-                                        "view_run_details", "open_actor_detail"] and function_result_dict.get("success"):
-                        action_metadata = function_result_dict
-                        
-                    # Special handling for fill_and_start_scraper - also trigger the run
-                    if function_name == "fill_and_start_scraper" and function_result_dict.get("success"):
-                        created_run_id = function_result_dict.get("run_id")
-                        created_actor_id = function_result_dict.get("actor_id")
-                        created_input_data = function_result_dict.get("form_data")
-                    
-                    # Get final response with function result
-                    follow_up_prompt = f"{enhanced_prompt}\n\nFunction result: {function_result}\n\nPlease respond naturally to the user's original question with this data. Remember the conversation context. DO NOT include FUNCTION_CALL in your response."
-                    
-                    # Create new LlmChat instance for follow-up
-                    follow_up_chat = LlmChat(
-                        api_key=self.api_key,
-                        session_id=session_id,
-                        system_message=follow_up_prompt
-                    ).with_model("openai", "gpt-4o-mini")
-                    
-                    follow_up_msg = UserMessage(text=f"Previous message: {message}\nAssistant response: {response}\n\nPlease provide a natural response with the function data.")
-                    final_response = await follow_up_chat.send_message(follow_up_msg)
-                    
-                    # Save assistant response
-                    await self.save_message("assistant", final_response, function_call_json)
-                    
-                    return {
-                        "response": final_response,
-                        "run_id": created_run_id,
-                        "actor_id": created_actor_id,
-                        "input_data": created_input_data,
-                        "action": action_metadata  # Include action commands
-                    }
-                except Exception as e:
-                    logger.error(f"Error processing function call: {str(e)}")
-                    response = f"I tried to fetch data but encountered an error: {str(e)}"
+                    function_call_json = json.loads(match.group(1))
+                    function_calls.append(function_call_json)
+                except:
+                    pass
             
-            # Save regular response
+            # Track all created runs and actions
+            created_run_ids = []
+            created_actor_ids = []
+            created_input_datas = []
+            action_metadata = None
+            
+            if function_calls:
+                all_function_results = []
+                
+                for function_call_json in function_calls:
+                    try:
+                        function_name = function_call_json.get("name")
+                        arguments = function_call_json.get("arguments", {})
+                        
+                        # Execute function
+                        function_result = await self.execute_function(function_name, arguments)
+                        function_result_dict = json.loads(function_result)
+                        all_function_results.append(function_result_dict)
+                        
+                        # Track run creation
+                        if function_name == "create_scraping_run" and function_result_dict.get("success"):
+                            created_run_id = function_result_dict.get("run_id")
+                            if created_run_id:
+                                created_run_ids.append(created_run_id)
+                                run = await self.db.runs.find_one({"id": created_run_id}, {"_id": 0})
+                                if run:
+                                    created_actor_ids.append(run.get("actor_id"))
+                                    created_input_datas.append(run.get("input_data"))
+                        
+                        # Track UI actions
+                        if function_name in ["navigate_to_page", "export_dataset", "fill_and_start_scraper", 
+                                            "view_run_details", "open_actor_detail"] and function_result_dict.get("success"):
+                            if not action_metadata:  # Use first action metadata
+                                action_metadata = function_result_dict
+                        
+                        # Special handling for fill_and_start_scraper
+                        if function_name == "fill_and_start_scraper" and function_result_dict.get("success"):
+                            created_run_id = function_result_dict.get("run_id")
+                            if created_run_id:
+                                created_run_ids.append(created_run_id)
+                                created_actor_ids.append(function_result_dict.get("actor_id"))
+                                created_input_datas.append(function_result_dict.get("form_data"))
+                            
+                    except Exception as e:
+                        logger.error(f"Error processing function call: {str(e)}")
+                        all_function_results.append({"error": str(e)})
+                
+                # Get final response with all function results
+                results_summary = json.dumps(all_function_results, indent=2)
+                follow_up_prompt = f"{enhanced_prompt}\n\nFunction results: {results_summary}\n\nPlease respond naturally to the user's original question with this data. Remember the conversation context. DO NOT include FUNCTION_CALL in your response. If multiple runs were created, mention all of them."
+                
+                # Create new LlmChat instance for follow-up
+                follow_up_chat = LlmChat(
+                    api_key=self.api_key,
+                    session_id=f"followup_{self.user_id}_{datetime.now().timestamp()}",
+                    system_message=follow_up_prompt
+                ).with_model("openai", "gpt-4o-mini")
+                
+                follow_up_msg = UserMessage(text=f"Original message: {message}\n\nPlease provide a natural response about what was executed.")
+                final_response = await follow_up_chat.send_message(follow_up_msg)
+                
+                # Save assistant response with all function calls
+                await self.save_message("assistant", final_response, {"multiple_calls": function_calls})
+                
+                return {
+                    "response": final_response,
+                    "run_id": created_run_ids[0] if created_run_ids else None,  # Return first for compatibility
+                    "run_ids": created_run_ids,  # Return all run IDs
+                    "actor_id": created_actor_ids[0] if created_actor_ids else None,
+                    "input_data": created_input_datas[0] if created_input_datas else None,
+                    "action": action_metadata
+                }
+            
+            # Save regular response (no function calls)
             await self.save_message("assistant", response)
             
             return {
                 "response": response,
                 "run_id": None,
+                "run_ids": [],
                 "actor_id": None,
                 "input_data": None,
                 "action": None
@@ -942,6 +965,7 @@ You: FUNCTION_CALL: {{"name": "create_scraping_run", "arguments": {{"actor_name"
             return {
                 "response": error_msg,
                 "run_id": None,
+                "run_ids": [],
                 "actor_id": None,
                 "input_data": None,
                 "action": None
