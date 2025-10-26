@@ -140,8 +140,8 @@ const RunsV3 = () => {
   };
 
   const formatTaskWithWrapping = (text) => {
-    // Split text into chunks of max 30 characters, breaking at spaces if possible
-    const maxLength = 30;
+    // Split text into chunks of max 50 characters, breaking at spaces if possible
+    const maxLength = 50;
     const words = text.split(' ');
     const lines = [];
     let currentLine = '';
