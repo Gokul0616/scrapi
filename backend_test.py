@@ -957,6 +957,27 @@ class ScrapiAPITester:
                     
                     if elapsed >= max_wait:
                         self.log("⚠️ Run did not complete within timeout, proceeding with test")
+                    
+                    # Create a second run to test sorting
+                    self.log("Creating second run to test sorting...")
+                    run_data2 = {
+                        "actor_id": self.actor_id,
+                        "input_data": {
+                            "search_terms": ["restaurants"],
+                            "location": "New York, NY",
+                            "max_results": 2,
+                            "extract_reviews": False,
+                            "extract_images": False
+                        }
+                    }
+                    
+                    time.sleep(2)  # Small delay to ensure different timestamps
+                    response2 = self.make_request("POST", "/runs", run_data2)
+                    if response2 and response2.status_code == 200:
+                        run2 = response2.json()
+                        self.log(f"✅ Second test run created: {run2['id']}")
+                    else:
+                        self.log("⚠️ Could not create second run for sorting test")
                 else:
                     self.log("❌ Failed to create test run")
                     self.test_results["actors_used"]["failed"] += 1
