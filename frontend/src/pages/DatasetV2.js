@@ -202,6 +202,24 @@ const DatasetV2 = () => {
     }
   };
 
+  const openLinksModal = (item) => {
+    setSelectedLinksItem(item);
+    setShowLinksModal(true);
+  };
+
+  const closeLinksModal = () => {
+    setShowLinksModal(false);
+    setSelectedLinksItem(null);
+  };
+
+  const getSocialMediaLinks = (socialMedia) => {
+    if (!socialMedia) return [];
+    return Object.entries(socialMedia).map(([platform, url]) => ({
+      platform,
+      url
+    }));
+  };
+
   const filteredItems = items.filter(item => {
     const searchLower = searchQuery.toLowerCase();
     return Object.values(item.data).some(value =>
