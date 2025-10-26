@@ -31,6 +31,10 @@ const RunsV3 = () => {
   const [sortBy, setSortBy] = useState('created_at');
   const [sortOrder, setSortOrder] = useState('desc');
   const [goToPageInput, setGoToPageInput] = useState('');
+  const [selectedRuns, setSelectedRuns] = useState([]);
+  const [abortingRuns, setAbortingRuns] = useState(new Set());
+  const [showAbortModal, setShowAbortModal] = useState(false);
+  const [abortModalData, setAbortModalData] = useState(null);
 
   useEffect(() => {
     fetchRuns();
