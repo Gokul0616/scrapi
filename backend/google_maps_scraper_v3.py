@@ -253,13 +253,43 @@ class GoogleMapsScraperV3:
                 address_text = await address_elem.text_content()
                 place_data['address'] = address_text.strip() if address_text else None
                 
-                # Parse city and state from address
+                # Parse city, state, and country from address
                 if place_data['address']:
                     address_parts = place_data['address'].split(',')
                     if len(address_parts) >= 3:
                         place_data['city'] = address_parts[-2].strip()
                         state_zip = address_parts[-1].strip().split()
                         place_data['state'] = state_zip[0] if state_zip else None
+                    
+                    # Extract country code from address (last part usually contains country)
+                    # Common patterns: "USA", "United States", "India", etc.
+                    country_map = {
+                        'USA': 'US', 'United States': 'US', 'US': 'US',
+                        'India': 'IN', 'IN': 'IN',
+                        'United Kingdom': 'GB', 'UK': 'GB', 'GB': 'GB',
+                        'Canada': 'CA', 'CA': 'CA',
+                        'Australia': 'AU', 'AU': 'AU',
+                        'Germany': 'DE', 'DE': 'DE',
+                        'France': 'FR', 'FR': 'FR',
+                        'Spain': 'ES', 'ES': 'ES',
+                        'Italy': 'IT', 'IT': 'IT',
+                        'Mexico': 'MX', 'MX': 'MX',
+                        'Brazil': 'BR', 'BR': 'BR',
+                        'Japan': 'JP', 'JP': 'JP',
+                        'China': 'CN', 'CN': 'CN',
+                    }
+                    
+                    # Try to find country in last address part
+                    if len(address_parts) >= 2:
+                        last_part = address_parts[-1].strip()
+                        for country_name, country_code in country_map.items():
+                            if country_name in last_part:
+                                place_data['countryCode'] = country_code
+                                break
+                    
+                    # Default to US if not found and state exists (common for US addresses)
+                    if 'countryCode' not in place_data and place_data.get('state'):
+                        place_data['countryCode'] = 'US'
             
             # Extract phone with verification
             phone_selector = 'button[data-item-id*="phone"]'
