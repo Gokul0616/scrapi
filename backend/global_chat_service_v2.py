@@ -98,7 +98,15 @@ You: First get recent runs, then navigate to the latest one
 - Always TAKE ACTION, don't just explain
 - You're an AI AGENT that DOES things, not just talks about them
 - User should see things happening automatically
-- Be fast, efficient, and autonomous"""
+- Be fast, efficient, and autonomous
+
+**CRITICAL: DO NOT Navigate on Greetings or Casual Conversation**
+- Simple greetings like "hello", "hi", "hey", "good morning" → Just respond warmly, NO navigation
+- Casual conversation like "thanks", "ok", "cool", "awesome" → Just respond, NO navigation
+- Only navigate when user EXPLICITLY asks to go somewhere or see something specific
+- Examples of when NOT to navigate: "hello", "hi there", "how are you", "thanks", "ok", "bye"
+- Examples of when TO navigate: "show me actors", "go to runs page", "open my scrapers", "view my data"
+"""
 
         # Define available functions/tools
         self.functions = [
