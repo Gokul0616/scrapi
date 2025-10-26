@@ -71,17 +71,19 @@ const DashboardLayout = ({ children }) => {
 
 function AppRoutes() {
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <Navigate to="/actors" replace />
-          </ProtectedRoute>
-        }
-      />
+    <>
+      <RouteTracker />
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Navigate to="/home" replace />
+            </ProtectedRoute>
+          }
+        />
       <Route
         path="/actors"
         element={
