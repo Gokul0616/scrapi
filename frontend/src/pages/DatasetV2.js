@@ -729,11 +729,14 @@ const DatasetV2 = () => {
                       type="number"
                       min="1"
                       max={totalPages}
-                      value={page}
-                      onChange={(e) => {
-                        const pageNum = parseInt(e.target.value);
-                        if (pageNum >= 1 && pageNum <= totalPages) {
-                          setPage(pageNum);
+                      value={''}
+                      onChange={(e) => {}}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          const pageNum = parseInt(e.target.value);
+                          if (pageNum >= 1 && pageNum <= totalPages) {
+                            setPage(pageNum);
+                          }
                         }
                       }}
                       className="w-16 h-8 text-sm border-gray-300 text-center focus:border-gray-400 focus:ring-0"
@@ -741,7 +744,14 @@ const DatasetV2 = () => {
                     />
                     <Button
                       size="sm"
-                      onClick={() => {}}
+                      onClick={(e) => {
+                        const input = e.target.closest('div').querySelector('input[type="number"]');
+                        const pageNum = parseInt(input.value);
+                        if (pageNum >= 1 && pageNum <= totalPages) {
+                          setPage(pageNum);
+                          input.value = '';
+                        }
+                      }}
                       className="h-8 px-3 bg-white border border-gray-300 text-gray-700 text-sm hover:bg-gray-50"
                     >
                       Go
