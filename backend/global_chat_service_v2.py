@@ -879,6 +879,13 @@ FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": 
 - When user says "run 5 more", check history for what they ran before
 - When user says "which one is best?", refer to previous context
 - Maintain context across ALL messages in conversation
+
+**CRITICAL - MULTI-LOCATION PARSING:**
+When user mentions multiple locations with "and", create SEPARATE runs for EACH location:
+- "X in A and B" = 2 runs (one for A, one for B)
+- "X in A, B, and C" = 3 runs (one for each location)
+- ALWAYS parse locations separately when connected by "and" or commas
+
 {conversation_context}"""
             
             # Initialize LlmChat WITHOUT session_id to avoid interference with our history management
