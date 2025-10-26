@@ -216,7 +216,13 @@ const DatasetV2 = () => {
     }
   };
 
-  const openLinksModal = (item) => {
+  const openLinksModal = (item, event) => {
+    event.stopPropagation();
+    const buttonRect = event.currentTarget.getBoundingClientRect();
+    setLinksModalPosition({
+      x: buttonRect.left,
+      y: buttonRect.bottom + 5 // 5px below the button
+    });
     setSelectedLinksItem(item);
     setShowLinksModal(true);
   };
