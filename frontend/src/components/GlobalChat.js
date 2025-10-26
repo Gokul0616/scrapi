@@ -27,9 +27,11 @@ const GlobalChat = () => {
     return saved ? JSON.parse(saved) : { corner: 'bottom-right' };
   });
   const [isDragging, setIsDragging] = useState(false);
+  const [dragMoved, setDragMoved] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [currentPos, setCurrentPos] = useState({ x: 0, y: 0 });
   const buttonRef = useRef(null);
+  const DRAG_THRESHOLD = 5; // pixels - minimum movement to consider it a drag
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
