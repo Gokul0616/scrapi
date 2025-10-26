@@ -475,6 +475,18 @@ frontend:
           agent: "main"
           comment: "Updated server to use new routes, startup event creates default Google Maps Scraper actor"
 
+  - task: "Actors Used Endpoint - /api/actors-used"
+    implemented: true
+    working: true
+    file: "backend/routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ /API/ACTORS-USED ENDPOINT FULLY TESTED: Comprehensive testing of the new /api/actors-used endpoint completed with EXCELLENT results! FUNCTIONALITY VERIFIED: (1) Returns actors that the current user has actually run (actors with run history) - correctly shows only Google Maps Scraper V2 that user has executed, (2) Includes all required run statistics: total_runs (12 runs), last_run_started (proper timestamp), last_run_status (running/succeeded), last_run_duration (19 seconds for completed runs, null for running), last_run_id (valid UUID), (3) Returns actors sorted by last run started (most recent first) - confirmed via MongoDB aggregation pipeline, (4) Includes all actor details (id, name, icon, description, category, etc.) - complete actor object with metadata. RESPONSE FORMAT PERFECT: Matches exactly the expected format from review request with all required fields present and properly typed. AUTHENTICATION WORKING: Endpoint properly requires authentication (returns 403 for unauthenticated requests). REAL DATA TESTING: Created multiple test runs (coffee shops in San Francisco, restaurants in New York) and verified endpoint returns accurate statistics reflecting actual user activity. EDGE CASES HANDLED: Works correctly with running jobs (duration=null), completed jobs (duration in seconds), and multiple runs per actor. All 9 test cases passed with no failures. Endpoint is production-ready and meets all specified requirements."
+
   - task: "Cleanup - Remove Marketplace Features & Configure OpenAI Key"
     implemented: true
     working: true
