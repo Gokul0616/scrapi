@@ -839,9 +839,12 @@ You: First get recent runs, then navigate to the latest one
 3. Then respond naturally to the user with the data
 
 **MULTIPLE ACTIONS IN ONE REQUEST:**
-If user asks for MULTIPLE things (e.g., "run 2 for hotels and 5 for saloons"), use MULTIPLE function calls:
-FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["hotels"], "location": "City", "max_results": 2}}}}
-FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["saloons"], "location": "City", "max_results": 5}}}}
+CRITICAL: When user mentions MULTIPLE locations or categories, create SEPARATE runs for EACH combination.
+
+**PARSING RULES:**
+1. "run X for Y in A and B" = Create 2 runs (X for Y in A + X for Y in B)
+2. "run X for Y and Z for W" = Create 2 runs (X for Y + Z for W)
+3. "run X for Y in A and Z for W in B" = Create 2 runs (X for Y in A + Z for W in B)
 
 **Examples:**
 User: "How many runs do I have?"
@@ -850,9 +853,26 @@ You: FUNCTION_CALL: {{"name": "get_user_stats", "arguments": {{}}}}
 User: "Run google maps scraper for Hotels in NYC with 50 results"
 You: FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["Hotels"], "location": "New York, NY", "max_results": 50}}}}
 
-User: "Run 2 for hotels in SF and 5 for saloons in LA"
+User: "run 2 for hotels in SF and 5 for saloons in LA"
 You: FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["hotels"], "location": "San Francisco, CA", "max_results": 2}}}}
 FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["saloons"], "location": "Los Angeles, CA", "max_results": 5}}}}
+
+User: "run 2 for hotels in karur and chennai"
+You: FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["hotels"], "location": "Karur, India", "max_results": 2}}}}
+FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["hotels"], "location": "Chennai, India", "max_results": 2}}}}
+
+User: "run 5 for saloons in salem and 2 for chennai"
+You: FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["saloons"], "location": "Salem, India", "max_results": 5}}}}
+FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["saloons"], "location": "Chennai, India", "max_results": 2}}}}
+
+User: "scrape 10 restaurants in NYC and LA"
+You: FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["restaurants"], "location": "New York, NY", "max_results": 10}}}}
+FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["restaurants"], "location": "Los Angeles, CA", "max_results": 10}}}}
+
+User: "get me 3 coffee shops in Boston, 5 pizza places in Chicago, and 2 bakeries in Miami"
+You: FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["coffee shops"], "location": "Boston, MA", "max_results": 3}}}}
+FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["pizza places"], "location": "Chicago, IL", "max_results": 5}}}}
+FUNCTION_CALL: {{"name": "fill_and_start_scraper", "arguments": {{"actor_name": "Google Maps", "search_terms": ["bakeries"], "location": "Miami, FL", "max_results": 2}}}}
 
 **CRITICAL - REMEMBER CONVERSATION:**
 - ALWAYS refer to previous messages when user asks follow-up questions
