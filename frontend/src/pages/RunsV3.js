@@ -259,7 +259,7 @@ const RunsV3 = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide w-64">
                   Actor
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide w-48">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide min-w-[200px] max-w-[300px]">
                   Task
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide w-24">
