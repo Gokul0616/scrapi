@@ -594,6 +594,31 @@ const RunsV3 = () => {
                       {run.origin || 'Web'}
                     </span>
                   </td>
+
+                  {/* Actions - Abort button */}
+                  <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                    {(run.status === 'running' || run.status === 'queued') && (
+                      <Button
+                        onClick={(e) => handleAbortClick(run, e)}
+                        disabled={abortingRuns.has(run.id)}
+                        size="sm"
+                        variant="outline"
+                        className="h-7 px-2 border-orange-300 text-orange-700 hover:bg-orange-50 text-xs"
+                      >
+                        {abortingRuns.has(run.id) ? (
+                          <>
+                            <Clock className="w-3 h-3 mr-1 animate-spin" />
+                            Aborting...
+                          </>
+                        ) : (
+                          <>
+                            <StopCircle className="w-3 h-3 mr-1" />
+                            Abort
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
