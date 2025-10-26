@@ -644,6 +644,18 @@ agent_communication:
           agent: "main"
           comment: "💬 CHAT HISTORY EXTENDED: Updated chat conversation memory from 10 to 30 messages as requested. Backend changes: (1) Modified global_chat_service_v2.py line 820 - updated get_conversation_history() call from limit=10 to limit=30, (2) Chat now maintains context for last 30 conversation turns. Frontend changes: (1) Updated GlobalChat.js line 43 - changed history API call from limit=50 to limit=30 to match backend, (2) Ensures consistent 30-message history across frontend and backend. Chat will now remember conversations for 30 messages until user manually clears history. Backend restarted and running successfully."
 
+  - task: "Notion-style Contextual Links Popup"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/DatasetV2.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "🎨 NOTION-STYLE CONTEXTUAL POPUP IMPLEMENTED: Replaced traditional centered modal with Notion-style contextual menu for social media links. Changes: (1) Added linksModalPosition state to track click coordinates, (2) Modified openLinksModal() to capture button position using getBoundingClientRect() - popup appears 5px below clicked button, (3) Replaced full-screen modal with positioned popup: transparent overlay for click-outside-to-close, white card with shadow-2xl at exact click position, compact design (320-400px width, max 400px height), (4) Redesigned links display: compact list items with hover effects, platform icons with colored backgrounds, truncated URLs (40 chars max), external link icon on hover, smooth transitions and group hover states, (5) Added viewport boundary detection: useEffect monitors popup position, adjusts if popup goes off right edge or bottom edge, keeps popup within viewport with 10px margin, (6) Improved UX: no close button needed (click outside to close), cleaner header with business name, scrollable content area, Notion-like minimal design. Frontend restarted successfully. Ready for testing contextual popup behavior."
+
 agent_communication:
     - agent: "main"
       message: "🚀 STORE UI & CHAT UPDATES COMPLETE: (1) Store page redesigned with Apify-style layout - horizontal category pills, cleaner 4-column grid, larger heading, kept white theme as requested, (2) Extended global chat history from 10 to 30 messages for better conversation memory, (3) Fixed backend dependencies and restarted services - all running successfully. Ready for testing: Store UI improvements and extended chat conversation memory (30 messages)."
