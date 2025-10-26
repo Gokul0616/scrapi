@@ -7,7 +7,7 @@ import requests
 import json
 
 # Get backend URL from environment
-BACKEND_URL = "https://template-error-fix-1.preview.emergentagent.com/api"
+BACKEND_URL = "https://inline-popup.preview.emergentagent.com/api"
 
 def test_chat_response():
     # First authenticate
