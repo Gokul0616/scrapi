@@ -348,13 +348,37 @@ const RunsV3 = () => {
             <h1 className="text-xl font-normal text-gray-900">
               Runs <span className="text-gray-400">({totalCount})</span>
             </h1>
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-8 px-3 border-gray-300 text-gray-700 text-sm hover:bg-gray-50"
-            >
-              API
-            </Button>
+            <div className="flex items-center gap-2">
+              {selectedRuns.length > 0 && (
+                <Button
+                  onClick={abortSelectedRuns}
+                  variant="outline"
+                  size="sm"
+                  className="h-8 px-3 border-orange-300 text-orange-700 text-sm hover:bg-orange-50"
+                >
+                  <StopCircle className="w-4 h-4 mr-1" />
+                  Abort Selected ({selectedRuns.length})
+                </Button>
+              )}
+              {runs.filter(r => r.status === 'running' || r.status === 'queued').length > 0 && (
+                <Button
+                  onClick={abortAllRunningRuns}
+                  variant="outline"
+                  size="sm"
+                  className="h-8 px-3 border-red-300 text-red-700 text-sm hover:bg-red-50"
+                >
+                  <StopCircle className="w-4 h-4 mr-1" />
+                  Abort All
+                </Button>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 px-3 border-gray-300 text-gray-700 text-sm hover:bg-gray-50"
+              >
+                API
+              </Button>
+            </div>
           </div>
 
           {/* Search */}
