@@ -41,10 +41,20 @@ class LeadChatService:
         try:
             # Build system message with lead context
             system_message = self._build_system_message(lead_data)
+            
+            # Add conversation history to system message for context
+            if chat_history and len(chat_history) > 0:
+                system_message += "\n\n**PREVIOUS CONVERSATION (Remember this context):**\n"
+                for msg in chat_history:
+                    role = "USER" if msg.get('role') == 'user' else "ASSISTANT"
+                    content = msg.get('content', '')
+                    system_message += f"\n{role}: {content}\n"
+                system_message += "\n**CURRENT USER MESSAGE:**"
 
-            # Initialize LlmChat client
+            # Initialize LlmChat client with unique session per request
+            # This prevents session interference and ensures our history management works
             lead_id = lead_data.get('id', 'unknown')
-            session_id = f"lead_chat_{lead_id}"
+            session_id = f"lead_chat_{lead_id}_{datetime.now().timestamp()}"
             
             chat_client = LlmChat(
                 api_key=self.api_key,
