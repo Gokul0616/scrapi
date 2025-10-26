@@ -212,6 +212,11 @@ const RunsV3 = () => {
         icon: <Clock className="w-4 h-4 text-gray-400" />,
         text: 'Queued',
         color: 'text-gray-600'
+      },
+      aborted: {
+        icon: <StopCircle className="w-4 h-4 text-orange-600" />,
+        text: 'Aborted',
+        color: 'text-orange-700'
       }
     };
 
