@@ -919,7 +919,7 @@ class ScrapiAPITester:
                     "input_data": {
                         "search_terms": ["coffee shops"],
                         "location": "San Francisco, CA",
-                        "max_results": 5,
+                        "max_results": 3,
                         "extract_reviews": False,
                         "extract_images": False
                     }
@@ -931,9 +931,32 @@ class ScrapiAPITester:
                     self.run_id = run["id"]
                     self.log(f"✅ Test run created: {self.run_id}")
                     
-                    # Wait for run to complete or at least start
+                    # Wait for run to complete to get better test data
                     import time
-                    time.sleep(10)  # Give it some time to start
+                    max_wait = 120  # 2 minutes max
+                    wait_interval = 10
+                    elapsed = 0
+                    
+                    while elapsed < max_wait:
+                        time.sleep(wait_interval)
+                        elapsed += wait_interval
+                        
+                        # Check run status
+                        status_response = self.make_request("GET", f"/runs/{self.run_id}")
+                        if status_response and status_response.status_code == 200:
+                            run_status = status_response.json()
+                            status = run_status.get("status", "unknown")
+                            self.log(f"Run status: {status} (waited {elapsed}s)")
+                            
+                            if status in ["succeeded", "failed"]:
+                                self.log(f"✅ Run completed with status: {status}")
+                                break
+                        else:
+                            self.log("⚠️ Could not check run status")
+                            break
+                    
+                    if elapsed >= max_wait:
+                        self.log("⚠️ Run did not complete within timeout, proceeding with test")
                 else:
                     self.log("❌ Failed to create test run")
                     self.test_results["actors_used"]["failed"] += 1
