@@ -418,7 +418,7 @@ const DatasetV2 = () => {
       {/* Table */}
       <div className="px-6 py-6">
         <div className="bg-white">
-          {filteredItems.length === 0 ? (
+          {items.length === 0 ? (
             <div className="text-center py-16 text-gray-500">
               <Search className="w-16 h-16 mx-auto mb-4 text-gray-300" />
               <p className="text-lg">No results found</p>
