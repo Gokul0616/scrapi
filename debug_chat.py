@@ -7,7 +7,7 @@ import requests
 import json
 
 # Get backend URL from environment
-BACKEND_URL = "https://chat-routing-fix.preview.emergentagent.com/api"
+BACKEND_URL = "https://run-terminator.preview.emergentagent.com/api"
 
 def test_chat_response():
     # First authenticate

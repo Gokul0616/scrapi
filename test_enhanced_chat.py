@@ -9,7 +9,7 @@ import time
 import re
 
 # Get backend URL from environment
-BACKEND_URL = "https://chat-routing-fix.preview.emergentagent.com/api"
+BACKEND_URL = "https://run-terminator.preview.emergentagent.com/api"
 
 def authenticate():
     """Authenticate and return headers"""
