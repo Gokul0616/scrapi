@@ -481,6 +481,18 @@ const RunsV3 = () => {
                   }`}
                   onClick={() => run.status === 'succeeded' && run.results_count > 0 && navigate(`/dataset/${run.id}`)}
                 >
+                  {/* Checkbox - Only for running/queued runs */}
+                  <td className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
+                    {(run.status === 'running' || run.status === 'queued') && (
+                      <input
+                        type="checkbox"
+                        checked={selectedRuns.includes(run.id)}
+                        onChange={() => toggleRunSelection(run.id)}
+                        className="w-4 h-4 rounded border-gray-300"
+                      />
+                    )}
+                  </td>
+
                   {/* Status - Icon + Text */}
                   <td className="px-6 py-4">
                     {getStatusDisplay(run.status)}
