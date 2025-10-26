@@ -247,8 +247,13 @@ function Home() {
                     recentRuns.map((run) => (
                       <tr 
                         key={run.id}
-                        onClick={() => navigate(`/dataset/${run.id}`)}
-                        className="hover:bg-gray-50 cursor-pointer transition-colors"
+                        onClick={() => {
+                          // Only navigate to dataset for succeeded runs
+                          if (run.status === 'succeeded') {
+                            navigate(`/dataset/${run.id}`);
+                          }
+                        }}
+                        className={`transition-colors ${run.status === 'succeeded' ? 'hover:bg-gray-50 cursor-pointer' : 'cursor-default'}`}
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
                           {getStatusBadge(run.status)}
