@@ -551,7 +551,7 @@ You: First get recent runs, then navigate to the latest one
     async def navigate_to_page(self, page: str) -> Dict[str, Any]:
         """Navigate to a specific page - returns command for frontend to execute."""
         try:
-            valid_pages = ["dashboard", "actors", "runs", "datasets", "leads", "proxies"]
+            valid_pages = ["home", "actors", "runs", "datasets", "leads", "proxies", "store", "marketplace"]
             if page not in valid_pages:
                 return {"error": f"Invalid page. Valid pages: {', '.join(valid_pages)}"}
             
@@ -562,7 +562,7 @@ You: First get recent runs, then navigate to the latest one
                 "message": f"Opening {page.capitalize()} page..."
             }
         except Exception as e:
-            logger.error(f"Error navigating to page: {str(e)}")
+            logger.error(f"Error navigating: {str(e)}")
             return {"error": str(e)}
     
     async def export_dataset(self, run_id: str, format: str = "json") -> Dict[str, Any]:
