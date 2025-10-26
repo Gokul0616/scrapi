@@ -22,8 +22,8 @@ const Login = () => {
     
     if (result.success) {
       toast({ title: 'Login successful!', variant: 'default' });
-      // Redirect to last visited path or default to /home
-      navigate(lastPath || '/home');
+      // Redirect to the path returned from login (last visited path or /home)
+      navigate(result.redirectPath || '/home');
     } else {
       toast({ title: 'Login failed', description: result.error, variant: 'destructive' });
     }
