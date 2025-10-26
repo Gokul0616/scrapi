@@ -12,6 +12,7 @@ import Runs from './pages/Runs';
 import Dataset from './pages/Dataset';
 import DatasetV2 from './pages/DatasetV2';
 import RunsV2 from './pages/RunsV2';
+import RunsV3 from './pages/RunsV3';
 import ActorsV2 from './pages/ActorsV2';
 import Marketplace from './pages/Marketplace';
 import MyScraper from './pages/MyScraper';
