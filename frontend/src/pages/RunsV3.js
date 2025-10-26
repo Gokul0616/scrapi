@@ -780,7 +780,7 @@ const RunsV3 = () => {
           showCancel={true}
           confirmText="Abort Run"
           cancelText="Cancel"
-          confirmButtonClass="bg-orange-600 hover:bg-orange-700"
+          confirmButtonClass="bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800"
         />
       )}
     </div>
