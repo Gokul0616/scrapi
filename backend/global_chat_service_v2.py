@@ -539,6 +539,106 @@ Then FUNCTION_CALL: {"name": "view_run_details", "arguments": {"run_id": "<first
             logger.error(f"Error deleting run: {str(e)}")
             return {"error": str(e)}
     
+    async def abort_multiple_runs(self, run_ids: List[str]) -> Dict[str, Any]:
+        """Abort multiple running or queued scraping jobs."""
+        try:
+            from task_manager import get_task_manager
+            task_manager = get_task_manager()
+            
+            results = {
+                "success": [],
+                "failed": [],
+                "not_found": []
+            }
+            
+            for run_id in run_ids:
+                try:
+                    # Verify run exists and is in abortable state
+                    run = await self.db.runs.find_one({
+                        "id": run_id,
+                        "user_id": self.user_id,
+                        "status": {"$in": ["running", "queued"]}
+                    })
+                    
+                    if not run:
+                        results["not_found"].append(run_id)
+                        continue
+                    
+                    # Try to cancel the task
+                    task_cancelled = await task_manager.cancel_task(run_id)
+                    
+                    # Update database status
+                    update_result = await self.db.runs.update_one(
+                        {"id": run_id, "user_id": self.user_id},
+                        {
+                            "$set": {
+                                "status": "aborted",
+                                "finished_at": datetime.now(timezone.utc).isoformat()
+                            }
+                        }
+                    )
+                    
+                    if update_result.modified_count > 0:
+                        results["success"].append(run_id)
+                        logger.info(f"Aborted run: {run_id}, task_cancelled: {task_cancelled}")
+                    else:
+                        results["failed"].append(run_id)
+                        
+                except Exception as e:
+                    logger.error(f"Error aborting run {run_id}: {str(e)}")
+                    results["failed"].append(run_id)
+            
+            total_aborted = len(results["success"])
+            message = f"Successfully aborted {total_aborted} run(s)"
+            if results["not_found"]:
+                message += f", {len(results['not_found'])} not found"
+            if results["failed"]:
+                message += f", {len(results['failed'])} failed"
+            
+            return {
+                "success": True,
+                "message": message,
+                "results": results,
+                "total_aborted": total_aborted
+            }
+            
+        except Exception as e:
+            logger.error(f"Error aborting multiple runs: {str(e)}")
+            return {"error": str(e)}
+    
+    async def abort_all_runs(self, status_filter: str = "running") -> Dict[str, Any]:
+        """Abort all running or queued runs."""
+        try:
+            # Validate status filter
+            valid_statuses = ["running", "queued", "all"]
+            if status_filter not in valid_statuses:
+                return {"error": f"Invalid status filter. Must be one of: {valid_statuses}"}
+            
+            # Build query
+            query = {"user_id": self.user_id}
+            if status_filter == "all":
+                query["status"] = {"$in": ["running", "queued"]}
+            else:
+                query["status"] = status_filter
+            
+            # Find all matching runs
+            runs = await self.db.runs.find(query, {"_id": 0, "id": 1}).to_list(length=None)
+            run_ids = [run["id"] for run in runs]
+            
+            if not run_ids:
+                return {
+                    "success": True,
+                    "message": f"No {status_filter} runs found to abort",
+                    "total_aborted": 0
+                }
+            
+            # Use abort_multiple_runs logic
+            return await self.abort_multiple_runs(run_ids)
+            
+        except Exception as e:
+            logger.error(f"Error aborting all runs: {str(e)}")
+            return {"error": str(e)}
+    
     async def get_dataset_info(self) -> Dict[str, Any]:
         """Get dataset information."""
         try:
