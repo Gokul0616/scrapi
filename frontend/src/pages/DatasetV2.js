@@ -57,36 +57,6 @@ const DatasetV2 = () => {
     }
   }, [selectedLead]);
 
-  // Adjust popup position to keep it within viewport
-  useEffect(() => {
-    if (showLinksModal && linksModalPosition.x && linksModalPosition.y) {
-      const popup = document.querySelector('[style*="z-50"]');
-      if (popup) {
-        const rect = popup.getBoundingClientRect();
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-        
-        let newX = linksModalPosition.x;
-        let newY = linksModalPosition.y;
-        
-        // Adjust horizontal position if popup goes off right edge
-        if (rect.right > viewportWidth) {
-          newX = viewportWidth - rect.width - 10;
-        }
-        
-        // Adjust vertical position if popup goes off bottom edge
-        if (rect.bottom > viewportHeight) {
-          newY = viewportHeight - rect.height - 10;
-        }
-        
-        // Update position if needed
-        if (newX !== linksModalPosition.x || newY !== linksModalPosition.y) {
-          setLinksModalPosition({ x: newX, y: newY });
-        }
-      }
-    }
-  }, [showLinksModal, linksModalPosition]);
-
   const fetchDataset = async () => {
     try {
       const token = localStorage.getItem('token');
