@@ -121,10 +121,30 @@ const RunsV3 = () => {
   };
 
   const formatTaskDescription = (run) => {
+    // Only show search terms (keywords)
     const searchTerms = run.input_data?.search_terms?.join(', ') || 'N/A';
-    const location = run.input_data?.location || 'N/A';
-    const maxResults = run.input_data?.max_results || 'N/A';
-    return `${searchTerms} | ${location} | Max: ${maxResults}`;
+    return searchTerms;
+  };
+
+  const formatTaskWithWrapping = (text) => {
+    // Split text into chunks of max 20 characters, breaking at spaces if possible
+    const maxLength = 20;
+    const words = text.split(' ');
+    const lines = [];
+    let currentLine = '';
+
+    words.forEach(word => {
+      if ((currentLine + word).length <= maxLength) {
+        currentLine += (currentLine ? ' ' : '') + word;
+      } else {
+        if (currentLine) lines.push(currentLine);
+        currentLine = word;
+      }
+    });
+    
+    if (currentLine) lines.push(currentLine);
+    
+    return lines;
   };
 
   const handleSort = (field) => {
