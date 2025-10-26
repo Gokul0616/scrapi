@@ -140,8 +140,8 @@ const RunsV3 = () => {
   };
 
   const formatTaskWithWrapping = (text) => {
-    // Split text into chunks of max 20 characters, breaking at spaces if possible
-    const maxLength = 20;
+    // Split text into chunks of max 30 characters, breaking at spaces if possible
+    const maxLength = 30;
     const words = text.split(' ');
     const lines = [];
     let currentLine = '';
@@ -151,7 +151,17 @@ const RunsV3 = () => {
         currentLine += (currentLine ? ' ' : '') + word;
       } else {
         if (currentLine) lines.push(currentLine);
-        currentLine = word;
+        // If a single word is longer than maxLength, break it
+        if (word.length > maxLength) {
+          let remainingWord = word;
+          while (remainingWord.length > maxLength) {
+            lines.push(remainingWord.substring(0, maxLength));
+            remainingWord = remainingWord.substring(maxLength);
+          }
+          currentLine = remainingWord;
+        } else {
+          currentLine = word;
+        }
       }
     });
     
