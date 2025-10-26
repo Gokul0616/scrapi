@@ -888,6 +888,170 @@ class ScrapiAPITester:
         
         self.log("Data isolation testing completed")
 
+    def test_country_code_extraction_review(self):
+        """Test the specific review request: Google Maps Scraper with country code extraction"""
+        self.log("=== REVIEW REQUEST: Testing Google Maps Scraper with Country Code Extraction ===")
+        
+        # Step 1: Register/Login (use existing test user or create new one)
+        self.log("Step 1: Register/Login with test user...")
+        if not self.test_auth_flow():
+            self.log("❌ Authentication failed - cannot proceed with review test")
+            return False
+        
+        # Step 2: Find Google Maps Scraper V2 actor
+        self.log("Step 2: Finding Google Maps Scraper V2 actor...")
+        response = self.make_request("GET", "/actors")
+        if response and response.status_code == 200:
+            actors = response.json()
+            google_maps_actor = None
+            for actor in actors:
+                if "Google Maps Scraper" in actor.get("name", ""):
+                    google_maps_actor = actor
+                    self.actor_id = actor["id"]
+                    self.log(f"✅ Found actor: {actor['name']}")
+                    break
+            
+            if not google_maps_actor:
+                self.log("❌ Google Maps Scraper V2 not found")
+                return False
+        else:
+            self.log("❌ Failed to get actors list")
+            return False
+        
+        # Step 3: Create Scraping Run with exact parameters from review request
+        self.log("Step 3: Creating scraping run with review parameters...")
+        self.log("  - Actor: Google Maps Scraper V2")
+        self.log("  - Search terms: 'coffee shops'")
+        self.log("  - Location: 'New York, NY'")
+        self.log("  - Max results: 3")
+        self.log("  - Extract reviews: false")
+        self.log("  - Extract images: false")
+        
+        run_data = {
+            "actor_id": self.actor_id,
+            "input_data": {
+                "search_terms": ["coffee shops"],
+                "location": "New York, NY",
+                "max_results": 3,
+                "extract_reviews": False,
+                "extract_images": False
+            }
+        }
+        
+        response = self.make_request("POST", "/runs", run_data)
+        if response and response.status_code == 200:
+            run = response.json()
+            self.run_id = run["id"]
+            self.log(f"✅ Scraping run created: {self.run_id}")
+        else:
+            self.log(f"❌ Failed to create scraping run: {response.status_code if response else 'No response'}")
+            return False
+        
+        # Step 4: Wait for Completion and Monitor Status
+        self.log("Step 4: Monitoring run status until completion...")
+        max_wait_time = 300  # 5 minutes
+        check_interval = 10  # 10 seconds
+        elapsed_time = 0
+        start_time = time.time()
+        
+        while elapsed_time < max_wait_time:
+            response = self.make_request("GET", f"/runs/{self.run_id}")
+            if response and response.status_code == 200:
+                run = response.json()
+                status = run.get("status", "unknown")
+                
+                self.log(f"Run status: {status} (elapsed: {elapsed_time}s)")
+                
+                if status == "succeeded":
+                    end_time = time.time()
+                    duration = end_time - start_time
+                    self.log(f"✅ Scraping completed successfully in {duration:.1f} seconds")
+                    break
+                elif status == "failed":
+                    error_msg = run.get("error_message", "Unknown error")
+                    self.log(f"❌ Scraping run failed: {error_msg}")
+                    return False
+                elif status in ["queued", "running"]:
+                    time.sleep(check_interval)
+                    elapsed_time += check_interval
+                else:
+                    self.log(f"❌ Unknown run status: {status}")
+                    return False
+            else:
+                self.log(f"❌ Failed to get run status")
+                return False
+                
+        if elapsed_time >= max_wait_time:
+            self.log("❌ Run did not complete within timeout period")
+            return False
+        
+        # Step 5: Verify Dataset Fields including NEW countryCode field
+        self.log("Step 5: Verifying dataset fields including NEW countryCode field...")
+        response = self.make_request("GET", f"/datasets/{self.run_id}/items")
+        if response and response.status_code == 200:
+            items = response.json()
+            if isinstance(items, list) and len(items) > 0:
+                self.log(f"✅ Retrieved {len(items)} dataset items")
+                
+                # Verify at least one business for complete field verification
+                for i, item in enumerate(items):
+                    self.log(f"\n--- Business #{i+1} Field Verification ---")
+                    if "data" in item:
+                        data = item["data"]
+                        
+                        # Check ALL required fields from review request
+                        required_fields = [
+                            "title", "address", "city", "state", "countryCode",
+                            "phone", "website", "category", "rating", "reviewsCount", 
+                            "totalScore", "socialMedia", "url"
+                        ]
+                        
+                        self.log(f"Business: {data.get('title', 'N/A')}")
+                        self.log(f"Address: {data.get('address', 'N/A')}")
+                        
+                        field_results = {}
+                        for field in required_fields:
+                            value = data.get(field)
+                            if value is not None and value != "":
+                                field_results[field] = "✅"
+                                if field == "countryCode":
+                                    if value == "US":
+                                        self.log(f"✅ {field}: {value} (CORRECT for New York)")
+                                    else:
+                                        self.log(f"❌ {field}: {value} (EXPECTED 'US' for New York)")
+                                        field_results[field] = "❌"
+                                else:
+                                    self.log(f"✅ {field}: {value}")
+                            else:
+                                field_results[field] = "❌"
+                                self.log(f"❌ {field}: Missing or empty")
+                        
+                        # Summary for this business
+                        working_fields = [f for f, status in field_results.items() if status == "✅"]
+                        missing_fields = [f for f, status in field_results.items() if status == "❌"]
+                        
+                        self.log(f"\nSummary for Business #{i+1}:")
+                        self.log(f"✅ Working fields ({len(working_fields)}): {', '.join(working_fields)}")
+                        if missing_fields:
+                            self.log(f"❌ Missing fields ({len(missing_fields)}): {', '.join(missing_fields)}")
+                        
+                        # Special focus on countryCode validation
+                        country_code = data.get("countryCode")
+                        if country_code == "US":
+                            self.log(f"🎯 COUNTRY CODE VALIDATION: ✅ PASSED - '{country_code}' is correct for New York")
+                        elif country_code:
+                            self.log(f"🎯 COUNTRY CODE VALIDATION: ❌ FAILED - Expected 'US' for New York, got '{country_code}'")
+                        else:
+                            self.log(f"🎯 COUNTRY CODE VALIDATION: ❌ FAILED - countryCode field is missing")
+                
+                return True
+            else:
+                self.log("❌ No dataset items found")
+                return False
+        else:
+            self.log(f"❌ Failed to get dataset items: {response.status_code if response else 'No response'}")
+            return False
+
     def test_actors_used_endpoint(self):
         """Test the new /api/actors-used endpoint as requested in review"""
         self.log("=== Testing /api/actors-used Endpoint ===")
