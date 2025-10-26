@@ -222,6 +222,37 @@ Then FUNCTION_CALL: {"name": "view_run_details", "arguments": {"run_id": "<first
                 }
             },
             {
+                "name": "abort_multiple_runs",
+                "description": "Abort multiple running or queued scraping jobs at once",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "run_ids": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                            "description": "List of run IDs to abort"
+                        }
+                    },
+                    "required": ["run_ids"]
+                }
+            },
+            {
+                "name": "abort_all_runs",
+                "description": "Abort all running or queued runs. Use when user says 'abort all', 'stop all runs', etc.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "status_filter": {
+                            "type": "string",
+                            "description": "Filter by status: 'running', 'queued', or 'all' (both)",
+                            "enum": ["running", "queued", "all"],
+                            "default": "running"
+                        }
+                    },
+                    "required": []
+                }
+            },
+            {
                 "name": "get_dataset_info",
                 "description": "Get information about datasets and total scraped items",
                 "parameters": {
