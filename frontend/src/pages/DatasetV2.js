@@ -698,6 +698,83 @@ const DatasetV2 = () => {
               </table>
             </div>
           )}
+
+          {/* Pagination Controls */}
+          {totalPages > 0 && items.length > 0 && (
+            <div className="border-t border-gray-200 bg-white px-6 py-4 mt-4">
+              <div className="flex items-center justify-between">
+                {/* Items per page */}
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600">Items per page:</span>
+                  <select
+                    value={limit}
+                    onChange={(e) => {
+                      setLimit(parseInt(e.target.value));
+                      setPage(1);
+                    }}
+                    className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:border-gray-400"
+                  >
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
+                </div>
+
+                {/* Page navigation */}
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600">Go to page:</span>
+                    <Input
+                      type="number"
+                      min="1"
+                      max={totalPages}
+                      value={page}
+                      onChange={(e) => {
+                        const pageNum = parseInt(e.target.value);
+                        if (pageNum >= 1 && pageNum <= totalPages) {
+                          setPage(pageNum);
+                        }
+                      }}
+                      className="w-16 h-8 text-sm border-gray-300 text-center focus:border-gray-400 focus:ring-0"
+                      placeholder={page.toString()}
+                    />
+                    <Button
+                      size="sm"
+                      onClick={() => {}}
+                      className="h-8 px-3 bg-white border border-gray-300 text-gray-700 text-sm hover:bg-gray-50"
+                    >
+                      Go
+                    </Button>
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setPage(Math.max(1, page - 1))}
+                      disabled={page === 1}
+                      className="h-8 w-8 p-0 text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      ←
+                    </Button>
+                    <div className="px-3 py-1 text-sm font-medium text-gray-700">
+                      {page}
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setPage(Math.min(totalPages, page + 1))}
+                      disabled={page === totalPages}
+                      className="h-8 w-8 p-0 text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      →
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
