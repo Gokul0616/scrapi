@@ -1137,6 +1137,7 @@ class ScrapiAPITester:
         
         try:
             response = self.make_request("GET", "/actors-used")
+            self.log(f"DEBUG: Response status code: {response.status_code if response else 'None'}")
             if response and response.status_code in [401, 403]:
                 self.log(f"✅ actors-used endpoint properly requires authentication ({response.status_code})")
                 self.test_results["actors_used"]["passed"] += 1
