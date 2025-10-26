@@ -230,23 +230,23 @@ const RunsV3 = () => {
           <table className="w-full border-collapse">
             <thead>
               <tr className="border-b border-gray-200 bg-white">
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide w-32">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide w-64">
                   Actor
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide w-48">
                   Task
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide w-24">
                   Results
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide w-24">
                   Usage
                 </th>
                 <th 
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide cursor-pointer hover:text-gray-700"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide cursor-pointer hover:text-gray-700 w-36"
                   onClick={() => handleSort('started_at')}
                 >
                   <div className="flex items-center gap-1">
@@ -256,17 +256,17 @@ const RunsV3 = () => {
                     )}
                   </div>
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide w-36">
                   Finished
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide w-24">
                   Duration
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide w-24">
                   Build
                 </th>
                 <th 
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide cursor-pointer hover:text-gray-700"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide cursor-pointer hover:text-gray-700 w-24"
                   onClick={() => handleSort('origin')}
                 >
                   <div className="flex items-center gap-1">
@@ -287,11 +287,9 @@ const RunsV3 = () => {
                   }`}
                   onClick={() => run.status === 'succeeded' && run.results_count > 0 && navigate(`/dataset/${run.id}`)}
                 >
-                  {/* Status - Just Icon */}
+                  {/* Status - Icon + Text */}
                   <td className="px-6 py-4">
-                    <div className="flex items-center">
-                      {getStatusIcon(run.status)}
-                    </div>
+                    {getStatusDisplay(run.status)}
                   </td>
 
                   {/* Actor - Icon + Name */}
@@ -311,10 +309,12 @@ const RunsV3 = () => {
                     </div>
                   </td>
 
-                  {/* Task - Show keywords, location, max */}
+                  {/* Task - Only keywords, wrapped at 20 chars */}
                   <td className="px-6 py-4">
-                    <div className="text-sm text-gray-700 max-w-md">
-                      {formatTaskDescription(run)}
+                    <div className="text-sm text-gray-700">
+                      {formatTaskWithWrapping(formatTaskDescription(run)).map((line, idx) => (
+                        <div key={idx}>{line}</div>
+                      ))}
                     </div>
                   </td>
 
