@@ -509,19 +509,19 @@ const DatasetV2 = () => {
                         <td className="px-6 py-4 text-sm text-gray-900">{(page - 1) * limit + index + 1}</td>
                       )}
                       {visibleColumns.title && (
-                        <td className="px-4 py-3 text-sm">
+                        <td className="px-6 py-4 text-sm">
                           <div className="font-medium text-gray-900 max-w-xs truncate" title={item.data.title}>
                             {item.data.title || '-'}
                           </div>
                         </td>
                       )}
                       {visibleColumns.totalScore && (
-                        <td className="px-4 py-3 text-sm text-gray-900">
+                        <td className="px-6 py-4 text-sm text-gray-700">
                           {item.data.totalScore || '-'}
                         </td>
                       )}
                       {visibleColumns.rating && (
-                        <td className="px-4 py-3 text-sm text-gray-900">
+                        <td className="px-6 py-4 text-sm text-gray-700">
                           {item.data.rating ? (
                             <div className="flex items-center gap-1">
                               <span className="text-yellow-500">⭐</span>
@@ -531,32 +531,32 @@ const DatasetV2 = () => {
                         </td>
                       )}
                       {visibleColumns.reviewsCount && (
-                        <td className="px-4 py-3 text-sm text-gray-900">
+                        <td className="px-6 py-4 text-sm text-gray-700">
                           {item.data.reviewsCount || '0'}
                         </td>
                       )}
                       {visibleColumns.address && (
-                        <td className="px-4 py-3 text-sm text-gray-600 max-w-xs truncate" title={item.data.address}>
+                        <td className="px-6 py-4 text-sm text-gray-700 max-w-xs truncate" title={item.data.address}>
                           {item.data.address || '-'}
                         </td>
                       )}
                       {visibleColumns.city && (
-                        <td className="px-4 py-3 text-sm text-gray-900">
+                        <td className="px-6 py-4 text-sm text-gray-700">
                           {item.data.city || '-'}
                         </td>
                       )}
                       {visibleColumns.state && (
-                        <td className="px-4 py-3 text-sm text-gray-900">
+                        <td className="px-6 py-4 text-sm text-gray-700">
                           {item.data.state || '-'}
                         </td>
                       )}
                       {visibleColumns.countryCode && (
-                        <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                        <td className="px-6 py-4 text-sm text-gray-700 font-medium">
                           {item.data.countryCode || '-'}
                         </td>
                       )}
                       {visibleColumns.website && (
-                        <td className="px-4 py-3 text-sm">
+                        <td className="px-6 py-4 text-sm">
                           {item.data.website ? (
                             <a 
                               href={item.data.website} 
@@ -608,17 +608,17 @@ const DatasetV2 = () => {
                         </td>
                       )}
                       {visibleColumns.phone && (
-                        <td className="px-4 py-3 text-sm text-gray-900">
+                        <td className="px-6 py-4 text-sm text-gray-700">
                           {item.data.phone || '-'}
                         </td>
                       )}
                       {visibleColumns.category && (
-                        <td className="px-4 py-3 text-sm text-gray-900">
+                        <td className="px-6 py-4 text-sm text-gray-700">
                           {item.data.category || '-'}
                         </td>
                       )}
                       {visibleColumns.url && (
-                        <td className="px-4 py-3 text-sm">
+                        <td className="px-6 py-4 text-sm">
                           {item.data.url ? (
                             <a 
                               href={item.data.url} 
