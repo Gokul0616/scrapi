@@ -8,7 +8,7 @@ import json
 import re
 
 # Get backend URL from environment
-BACKEND_URL = "https://smart-shop-chat.preview.emergentagent.com/api"
+BACKEND_URL = "https://actord-showcase.preview.emergentagent.com/api"
 
 def test_run_creation():
     # Authenticate
