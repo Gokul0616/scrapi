@@ -179,6 +179,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ V3 ENHANCED SCRAPER FULLY TESTED: Successfully scraped 15 restaurants from New York as requested. Enhanced features confirmed: (1) Parallel extraction working (5 at a time), (2) Enhanced progress logs with emojis (🔍 Searching, ✅ Found, 📊 Extracting), (3) Faster performance (46 seconds), (4) Retry logic available, (5) Enhanced fields working: city/state parsing, totalScore calculation, (6) Phone extraction working (14/15 restaurants had phones), (7) Email extraction working (1/15 had email - expected limitation). Minor: emailVerified/phoneVerified flags not set but core extraction functional. V3 scraper performance excellent and meets all requirements."
+        - working: true
+          agent: "testing"
+          comment: "🎯 COUNTRY CODE EXTRACTION REVIEW COMPLETED: Successfully tested Google Maps Scraper V2 with country code extraction as requested. PERFECT RESULTS: (1) Created scraping run with exact parameters: coffee shops in New York, NY with max 3 results, (2) Run completed successfully in 32.4 seconds, (3) Retrieved 3 dataset items with complete business data, (4) NEW countryCode field working perfectly - all 3 businesses correctly show 'US' for New York addresses, (5) All required fields verified: title ✅, address ✅, city ✅, state ✅, countryCode ✅ (NEW), phone ✅, website ✅, category ✅, rating ✅, reviewsCount ✅, totalScore ✅, socialMedia ✅, url ✅. BUSINESSES TESTED: 'The Lost Draft' (12/13 fields), 'Stumptown Coffee Roasters' (13/13 fields with full social media), 'La Cabra Bakery' (12/13 fields). Country code validation PASSED for all businesses - correctly extracted 'US' for New York locations. Feature ready for production use."
 
   - task: "Google Maps Scraper V4 Enhanced (SUPER FAST) - REMOVED"
     implemented: false
