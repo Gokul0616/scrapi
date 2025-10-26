@@ -65,9 +65,16 @@ const DatasetV2 = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(`${API}/datasets/${runId}/items`, {
+        params: {
+          page,
+          limit,
+          search: searchQuery || undefined
+        },
         headers: { Authorization: `Bearer ${token}` }
       });
-      setItems(response.data);
+      setItems(response.data.items || []);
+      setTotalCount(response.data.total || 0);
+      setTotalPages(response.data.total_pages || 1);
     } catch (error) {
       console.error('Failed to fetch dataset:', error);
       toast({
