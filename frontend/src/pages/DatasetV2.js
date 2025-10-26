@@ -662,110 +662,129 @@ const DatasetV2 = () => {
         </div>
       </div>
 
-      {/* Links Modal */}
+      {/* Notion-style Contextual Links Popup */}
       {showLinksModal && selectedLinksItem && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">All Social Media Links</h3>
-              <button onClick={closeLinksModal} className="text-gray-400 hover:text-gray-600">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="px-6 py-4 overflow-y-auto max-h-[60vh]">
-              <div className="mb-4">
-                <h4 className="font-medium text-gray-900 mb-2">{selectedLinksItem.data.title}</h4>
-                <p className="text-sm text-gray-600">{selectedLinksItem.data.address}</p>
+        <>
+          {/* Transparent overlay to close on click outside */}
+          <div 
+            className="fixed inset-0 z-40" 
+            onClick={closeLinksModal}
+          />
+          
+          {/* Contextual popup at click position */}
+          <div 
+            className="fixed z-50 bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden"
+            style={{
+              left: `${linksModalPosition.x}px`,
+              top: `${linksModalPosition.y}px`,
+              minWidth: '320px',
+              maxWidth: '400px',
+              maxHeight: '400px'
+            }}
+          >
+            {/* Header with business name */}
+            <div className="px-4 py-3 border-b border-gray-200 bg-gray-50">
+              <div className="font-semibold text-gray-900 text-sm truncate">
+                {selectedLinksItem.data.title}
               </div>
-              <div className="space-y-3">
+              <div className="text-xs text-gray-500 truncate mt-0.5">
+                All social links
+              </div>
+            </div>
+            
+            {/* Links list - scrollable */}
+            <div className="overflow-y-auto max-h-[320px]">
+              <div className="py-1">
+                {/* Social Media Links */}
                 {selectedLinksItem.data.socialMedia && Object.entries(selectedLinksItem.data.socialMedia).map(([platform, url]) => (
-                  <div key={platform} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        platform === 'facebook' ? 'bg-blue-100' :
-                        platform === 'instagram' ? 'bg-pink-100' :
-                        platform === 'twitter' ? 'bg-sky-100' :
-                        platform === 'linkedin' ? 'bg-blue-100' :
-                        platform === 'youtube' ? 'bg-red-100' :
-                        platform === 'tiktok' ? 'bg-black' : 'bg-gray-100'
+                  <a
+                    key={platform}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center px-3 py-2 hover:bg-gray-100 transition-colors group"
+                  >
+                    <div className={`w-8 h-8 rounded flex items-center justify-center mr-3 flex-shrink-0 ${
+                      platform === 'facebook' ? 'bg-blue-50 group-hover:bg-blue-100' :
+                      platform === 'instagram' ? 'bg-pink-50 group-hover:bg-pink-100' :
+                      platform === 'twitter' ? 'bg-sky-50 group-hover:bg-sky-100' :
+                      platform === 'linkedin' ? 'bg-blue-50 group-hover:bg-blue-100' :
+                      platform === 'youtube' ? 'bg-red-50 group-hover:bg-red-100' :
+                      platform === 'tiktok' ? 'bg-gray-100 group-hover:bg-gray-200' : 'bg-gray-50 group-hover:bg-gray-100'
+                    }`}>
+                      <span className={`text-sm font-semibold ${
+                        platform === 'facebook' ? 'text-blue-600' :
+                        platform === 'instagram' ? 'text-pink-600' :
+                        platform === 'twitter' ? 'text-sky-600' :
+                        platform === 'linkedin' ? 'text-blue-700' :
+                        platform === 'youtube' ? 'text-red-600' :
+                        platform === 'tiktok' ? 'text-gray-900' : 'text-gray-600'
                       }`}>
-                        <span className={`text-sm font-bold ${
-                          platform === 'facebook' ? 'text-blue-600' :
-                          platform === 'instagram' ? 'text-pink-600' :
-                          platform === 'twitter' ? 'text-sky-600' :
-                          platform === 'linkedin' ? 'text-blue-700' :
-                          platform === 'youtube' ? 'text-red-600' :
-                          platform === 'tiktok' ? 'text-white' : 'text-gray-600'
-                        }`}>
-                          {platform === 'facebook' ? 'f' :
-                           platform === 'instagram' ? '📷' :
-                           platform === 'twitter' ? '𝕏' :
-                           platform === 'linkedin' ? 'in' :
-                           platform === 'youtube' ? '▶' :
-                           platform === 'tiktok' ? '🎵' : ''}
-                        </span>
+                        {platform === 'facebook' ? 'f' :
+                         platform === 'instagram' ? '📷' :
+                         platform === 'twitter' ? '𝕏' :
+                         platform === 'linkedin' ? 'in' :
+                         platform === 'youtube' ? '▶' :
+                         platform === 'tiktok' ? '🎵' : ''}
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-gray-900 capitalize">
+                        {platform}
                       </div>
-                      <div>
-                        <div className="font-medium text-gray-900 capitalize">{platform}</div>
-                        <div className="text-sm text-gray-600 truncate max-w-md">{url}</div>
+                      <div className="text-xs text-gray-500 truncate">
+                        {url.length > 40 ? url.substring(0, 40) + '...' : url}
                       </div>
                     </div>
-                    <a
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md transition-colors"
-                    >
-                      Visit
-                    </a>
-                  </div>
+                    <ExternalLink className="w-4 h-4 text-gray-400 ml-2 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </a>
                 ))}
+                
+                {/* Website Link */}
                 {selectedLinksItem.data.website && (
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-                        <ExternalLink className="w-5 h-5 text-gray-600" />
-                      </div>
-                      <div>
-                        <div className="font-medium text-gray-900">Website</div>
-                        <div className="text-sm text-gray-600 truncate max-w-md">{selectedLinksItem.data.website}</div>
+                  <a
+                    href={selectedLinksItem.data.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center px-3 py-2 hover:bg-gray-100 transition-colors group"
+                  >
+                    <div className="w-8 h-8 rounded bg-gray-50 group-hover:bg-gray-100 flex items-center justify-center mr-3 flex-shrink-0">
+                      <ExternalLink className="w-4 h-4 text-gray-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-gray-900">Website</div>
+                      <div className="text-xs text-gray-500 truncate">
+                        {selectedLinksItem.data.website.length > 40 
+                          ? selectedLinksItem.data.website.substring(0, 40) + '...' 
+                          : selectedLinksItem.data.website}
                       </div>
                     </div>
-                    <a
-                      href={selectedLinksItem.data.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md transition-colors"
-                    >
-                      Visit
-                    </a>
-                  </div>
+                    <ExternalLink className="w-4 h-4 text-gray-400 ml-2 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </a>
                 )}
+                
+                {/* Google Maps Link */}
                 {selectedLinksItem.data.url && (
-                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-                        <MapPin className="w-5 h-5 text-red-600" />
-                      </div>
-                      <div>
-                        <div className="font-medium text-gray-900">Google Maps</div>
-                        <div className="text-sm text-gray-600">View location on map</div>
-                      </div>
+                  <a
+                    href={selectedLinksItem.data.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center px-3 py-2 hover:bg-gray-100 transition-colors group"
+                  >
+                    <div className="w-8 h-8 rounded bg-red-50 group-hover:bg-red-100 flex items-center justify-center mr-3 flex-shrink-0">
+                      <MapPin className="w-4 h-4 text-red-600" />
                     </div>
-                    <a
-                      href={selectedLinksItem.data.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md transition-colors"
-                    >
-                      View Map
-                    </a>
-                  </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-gray-900">Google Maps</div>
+                      <div className="text-xs text-gray-500">View on map</div>
+                    </div>
+                    <ExternalLink className="w-4 h-4 text-gray-400 ml-2 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </a>
                 )}
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
 
       {/* Column Settings Modal */}
