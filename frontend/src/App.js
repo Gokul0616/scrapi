@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Toaster } from './components/ui/toaster';
 import Sidebar from './components/Sidebar';
@@ -20,6 +20,21 @@ import CreateScraper from './pages/CreateScraper';
 import Home from './pages/Home';
 import Store from './pages/Store';
 import GlobalChat from './components/GlobalChat';
+
+// Component to track route changes and update last path
+const RouteTracker = () => {
+  const location = useLocation();
+  const { updateLastPath, user } = useAuth();
+  
+  useEffect(() => {
+    // Only track authenticated routes (not login/register)
+    if (user && location.pathname !== '/login' && location.pathname !== '/register') {
+      updateLastPath(location.pathname);
+    }
+  }, [location.pathname, user, updateLastPath]);
+  
+  return null;
+};
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
