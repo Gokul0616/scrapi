@@ -262,8 +262,8 @@ class ScrapiAPITester:
             self.test_results["proxies"]["errors"].append("Proxy health check failed")
             
     def test_enhanced_scraping_v3(self):
-        """Test enhanced Google Maps Scraper V3 with specific requirements"""
-        self.log("=== Testing Enhanced Google Maps Scraper V3 ===")
+        """Test Google Maps Scraper V2 with country code extraction as requested in review"""
+        self.log("=== Testing Google Maps Scraper V2 with Country Code Extraction ===")
         
         if not self.actor_id:
             self.log("❌ Cannot test scraping - no actor ID available")
@@ -271,14 +271,14 @@ class ScrapiAPITester:
             self.test_results["runs"]["errors"].append("No actor ID available for scraping test")
             return
             
-        # Test create scraping run with restaurants in New York (as requested)
-        self.log("Testing V3 scraper with restaurants in New York (max_results=15)...")
+        # Test create scraping run with coffee shops in New York, NY (as requested in review)
+        self.log("Testing Google Maps Scraper V2 with coffee shops in New York, NY (max_results=3)...")
         run_data = {
             "actor_id": self.actor_id,
             "input_data": {
-                "search_terms": ["restaurants"],
-                "location": "New York",
-                "max_results": 15,
+                "search_terms": ["coffee shops"],
+                "location": "New York, NY",
+                "max_results": 3,
                 "extract_reviews": False,
                 "extract_images": False
             }
