@@ -520,7 +520,44 @@ const DatasetV2 = () => {
                             >
                               {item.data.website}
                             </a>
-                          ) : '-'}
+                          ) : (
+                            // If no website, show social media links
+                            (() => {
+                              const socialLinks = [];
+                              if (item.data.socialMedia) {
+                                const social = item.data.socialMedia;
+                                if (social.facebook) socialLinks.push({ name: 'Facebook', url: social.facebook });
+                                if (social.instagram) socialLinks.push({ name: 'Instagram', url: social.instagram });
+                                if (social.twitter) socialLinks.push({ name: 'Twitter', url: social.twitter });
+                                if (social.linkedin) socialLinks.push({ name: 'LinkedIn', url: social.linkedin });
+                                if (social.youtube) socialLinks.push({ name: 'YouTube', url: social.youtube });
+                                if (social.tiktok) socialLinks.push({ name: 'TikTok', url: social.tiktok });
+                              }
+                              
+                              if (socialLinks.length > 0) {
+                                return (
+                                  <div className="flex flex-col gap-1">
+                                    {socialLinks.slice(0, 2).map((link, idx) => (
+                                      <a 
+                                        key={idx}
+                                        href={link.url} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="text-blue-600 hover:underline text-xs truncate max-w-xs"
+                                        title={`${link.name}: ${link.url}`}
+                                      >
+                                        {link.name}
+                                      </a>
+                                    ))}
+                                    {socialLinks.length > 2 && (
+                                      <span className="text-xs text-gray-500">+{socialLinks.length - 2} more</span>
+                                    )}
+                                  </div>
+                                );
+                              }
+                              return '-';
+                            })()
+                          )}
                         </td>
                       )}
                       {visibleColumns.phone && (
