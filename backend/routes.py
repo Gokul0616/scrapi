@@ -706,8 +706,11 @@ async def generate_outreach_template(
         
         return {"template": template}
     
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Template generation error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate template: {str(e)}")
 
 # ============= Global Chat Routes =============
 @router.post("/chat/global")
