@@ -413,6 +413,14 @@ const RunsV3 = () => {
           <table className="w-full border-collapse">
             <thead>
               <tr className="border-b border-gray-200 bg-white">
+                <th className="px-4 py-3 text-left w-12">
+                  <input
+                    type="checkbox"
+                    checked={selectedRuns.length > 0 && selectedRuns.length === runs.filter(r => r.status === 'running' || r.status === 'queued').length}
+                    onChange={toggleSelectAll}
+                    className="w-4 h-4 rounded border-gray-300"
+                  />
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide w-32">
                   Status
                 </th>
@@ -458,6 +466,9 @@ const RunsV3 = () => {
                       <ChevronDown className={`w-3 h-3 transition-transform ${sortOrder === 'asc' ? 'rotate-180' : ''}`} />
                     )}
                   </div>
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide w-32">
+                  Actions
                 </th>
               </tr>
             </thead>
