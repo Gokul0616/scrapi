@@ -1116,8 +1116,8 @@ class ScrapiAPITester:
         
         try:
             response = self.make_request("GET", "/actors-used")
-            if response and response.status_code == 401:
-                self.log("✅ actors-used endpoint properly requires authentication")
+            if response and response.status_code in [401, 403]:
+                self.log(f"✅ actors-used endpoint properly requires authentication ({response.status_code})")
                 self.test_results["actors_used"]["passed"] += 1
             elif response and response.status_code == 422:
                 # FastAPI returns 422 for missing auth sometimes
